@@ -19,11 +19,12 @@ class FontManager:
         LabelBase.register(name='Malgun Gothic', fn_regular=font_path_malgun)
 
 class ProgressPageCompo:
-    def __init__(self, layout):
+    def __init__(self, screen_manager, layout):
         self.layout = layout
         self.progress_value = 50
         self.days_left = {'mid_exam': 3, 'project': 5, 'final_exam': 7}
         self.progress_bar = []
+        self.screen_manager = screen_manager
 
         self.days_left_labels = [
             self.create_days_left_label('중간고사', 'mid_exam'),
@@ -42,13 +43,10 @@ class ProgressPageCompo:
 
     def create_back_button(self):
         back_button = Button(
-            text='> 돌아가기',
-            size_hint=(0.4, 0.1),
-            pos_hint={'center_x': 0.5, 'y': 0.05},
-            font_name='H2GPRM',
-            font_size=24,
-            background_color=(0, 0, 0, 1),
-            color=(1, 1, 1, 1)
+            text='> 돌아간다', size_hint=(None, 1), width=200,  # 버튼 크기 설정
+            font_name='H2GPRM', font_size=24,  # 커스텀 폰트 및 크기 적용
+            background_color=(0, 0, 0, 1),  # 검정 배경색
+            color=(1, 1, 1, 1)  # 흰색 텍스트 색상
         )
         back_button.bind(on_press=self.on_button_clicked)
         return back_button
@@ -91,9 +89,10 @@ class ProgressPageCompo:
         self.progress_bar[1].pos = (x_pos, y_pos)
         self.progress_bar[2].pos = (x_pos, y_pos)
 
-    @staticmethod
-    def on_button_clicked(instance):
+    def on_button_clicked(self, instance):
         print('돌아가기 버튼 클릭')
+        self.screen_manager.current = 'main'
+
 
 class ProgressPageBackground:
     def __init__(self, layout):
@@ -107,26 +106,29 @@ class ProgressPageBackground:
         self.rect.size = self.layout.size
         self.rect.pos = self.layout.pos
 
-def ProgressPage():
+def ProgressPage(screen_manager):
     """진행도 페이지의 위젯을 반환하는 함수."""
     layout = FloatLayout(size=(400, 600))
     ProgressPageBackground(layout)
 
     # ProgressPageCompo 생성 및 초기화
-    progress_compo = ProgressPageCompo(layout)
+    progress_compo = ProgressPageCompo(screen_manager, layout)
 
     # 이미지 상단에서 조금 내린 위치에 배치
-    if os.path.exists(progress_compo.title_image_path):
-        title_image = Image(
-            source=progress_compo.title_image_path,
-            size_hint=(1, None),
-            height=100,
-            pos_hint={'top': 0.68}  # 이미지 위치를 약간 하단으로 조정
-        )
-        layout.add_widget(title_image)
-    else:
+    try:
+        if os.path.exists(progress_compo.title_image_path):
+            title_image = Image(
+                source=progress_compo.title_image_path,
+                size_hint=(1, None),
+                height=100,
+                pos_hint={'top': 0.68}  # 이미지 위치를 약간 하단으로 조정
+            )
+            layout.add_widget(title_image)
+        else:
+            raise FileNotFoundError("progress_icon.png 파일을 찾을 수 없습니다.")
+    except Exception as e:
         layout.add_widget(Label(
-            text='이미지를 찾을 수 없습니다.',
+            text=str(e),
             font_name='Malgun Gothic',
             size_hint=(1, None),
             height=150,
@@ -154,3 +156,5 @@ def ProgressPage():
     progress_compo.draw_progress_rect()
 
     return layout
+
+

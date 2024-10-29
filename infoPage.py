@@ -45,12 +45,13 @@ class UserInfo:
 class InfoPage(BoxLayout):
     """사용자 정보와 능력치를 출력하는 UI 페이지를 구성하는 클래스."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, screen_manager, **kwargs):
         """InfoPage 초기화 메서드."""
         super().__init__(**kwargs)  # 부모 클래스(BoxLayout)의 초기화 호출
         self.orientation = 'vertical'  # 수직 정렬 설정
         self.padding = [10, 10]  # 내부 여백 설정
         self.spacing = 10  # 위젯 간의 간격 설정
+        self.screen_manager = screen_manager  # 전달된 ScreenManager 저장
 
         # UserInfo 클래스의 인스턴스 생성
         user_info = UserInfo()
@@ -109,10 +110,6 @@ class InfoPage(BoxLayout):
         back_button.bind(on_press=self.on_button_clicked)  # 버튼 클릭 이벤트 바인딩
         return back_button  # 버튼 반환
 
-    @staticmethod
-    def on_button_clicked(instance):
+    def on_button_clicked(self, instance):
         """돌아가기 버튼 클릭 시 호출되는 메서드."""
-        print('돌아가기 버튼 클릭')  # 콘솔에 메시지 출력
-
-# 폰트 등록을 호출 (UI 생성 전에 반드시 호출해야 함)
-FontManager.register_fonts()
+        self.screen_manager.current = 'main'  # main이라는 페이지로 이동
