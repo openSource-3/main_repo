@@ -48,8 +48,11 @@ class ProgressPageCompo:
             background_color=(0, 0, 0, 1),  # 검정 배경색
             color=(1, 1, 1, 1)  # 흰색 텍스트 색상
         )
-        back_button.bind(on_press=self.on_button_clicked)
+        back_button.bind(on_press=lambda instance: self.on_button_clicked(instance))
         return back_button
+
+    def on_button_clicked(self, instance):
+        self.screen_manager.current = 'main'
 
     def draw_progress_rect(self):
         """진행 바를 생성하고 중앙에 배치."""
@@ -88,10 +91,6 @@ class ProgressPageCompo:
         self.progress_bar[0].rectangle = (x_pos, y_pos, self.rect_width, self.rect_height)
         self.progress_bar[1].pos = (x_pos, y_pos)
         self.progress_bar[2].pos = (x_pos, y_pos)
-
-    def on_button_clicked(self, instance):
-        print('돌아가기 버튼 클릭')
-        self.screen_manager.current = 'main'
 
 
 class ProgressPageBackground:
@@ -149,11 +148,11 @@ def ProgressPage(screen_manager):
 
     text_layout.add_widget(progress_compo.back_button)
 
-    # 레이아웃 조합
-    layout.add_widget(text_layout)
-
     # 진행 바 그리기 및 중앙 고정
     progress_compo.draw_progress_rect()
+
+    # 레이아웃 조합
+    layout.add_widget(text_layout)
 
     return layout
 
