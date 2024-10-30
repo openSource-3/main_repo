@@ -1,7 +1,7 @@
 import kivy
 import random
 from kivy.app import App
-from kivy.uix.screenmanager import Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -14,6 +14,8 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.clock import Clock  # Kivy의 Clock을 이용해 딜레이 처리
 from typing import Tuple, Any
 from kivy.uix.image import Image
+from infoPage import InfoPage, FontManager
+from progressPage import ProgressPage
 import re
 
 fontName_Bold = 'GowunBatang-Bold.ttf'
@@ -55,9 +57,10 @@ class GameScreen(Screen):
     saved_re_position = ""
     previous_name = "mainmenu"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.build()  # 초기화 시 build 메서드를 호출하여 레이아웃을 설정
+    def __init__(self, screen_manager=None, **kwargs):
+        super(GameScreen, self).__init__(**kwargs)
+        self.screen_manager = screen_manager  # ScreenManager 인스턴스 저장
+        self.build()
 
     def build(self):
         print("빌드 실행")
@@ -88,6 +91,9 @@ class GameScreen(Screen):
         # 능력창 및 진척도창 버튼 추가, 크기 1/4로 줄임
         self.ability_button = Button(text="능력창", font_name=fontName_Regular, size_hint=(1, 0.15))
         self.progress_button = Button(text="진척도", font_name=fontName_Regular, size_hint=(1, 0.15))
+
+        self.ability_button.bind(on_press=self.open_info_page)
+        self.progress_button.bind(on_press=self.open_progress_page)
 
         # 빈 공간을 검은색으로 설정
         self.black_space = ColoredBox(color=(0, 0, 0, 1), size_hint=(1, 0.5))
@@ -177,6 +183,17 @@ class GameScreen(Screen):
         if self.previous_name == "mainmenu":
             self.reset_game()
 
+    def open_info_page(self, instance):
+        info_screen = self.screen_manager.get_screen('info')  # 'a' 화면 가져오기
+        info_layout = info_screen.children[0]  # ABoxLayout 인스턴스 (Screen의 첫 번째 자식)
+        info_layout.update_ability_stat(self.ability_stat)  # 점수 전달
+
+        # a 화면으로 전환
+        self.screen_manager.current = 'info'
+
+    def open_progress_page(self, instance):
+        self.screen_manager.current = 'progress'  # 'progress' 화면으로 전환
+        self.previous_name = "other"
     # 윈도우 크기가 변경될 때 비율 조정
     def adjust_layout(self, instance, width, height):
         # 현재 창의 비율 계산
