@@ -1,3 +1,21 @@
 # Start
 건강이 최고죠!
 잘 먹어야 공부도 잘한다고요
+
+# midterm_exam - 1
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 2
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 3
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 4
+GRANT는 DCL(Data Control Language)에 속해,
+사용자 권한을 부여하거나 제어하는 데 사용되지
+반면, SELECT, INSERT, UPDATE는
+데이터를 조작하는 DML(Data Manipulation Language)에 속하지
+
+# midterm_exam - 5
+내가 고른 답이 맞겠지..?
