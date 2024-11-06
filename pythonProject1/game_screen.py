@@ -43,7 +43,7 @@ class ClickableLabel(ButtonBehavior, Label):
 
 
 class GameScreen(Screen):
-    ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 0, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3}
+    ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 0, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "팀인원": 0}
     main = True
     on_choice_able = False
     day = 0
