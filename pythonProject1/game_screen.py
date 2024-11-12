@@ -172,7 +172,7 @@ class GameScreen(Screen):
         self.saved_re_position = ""
         self.is_waiting_for_click = False
         self.text_area.text = ""
-        self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 0, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3}
+        self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 0, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "팀인원": 0}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
@@ -323,6 +323,14 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif (self.day == 5):
             self.day += 1
+            if self.ability_stat['팀인원'] == 0:
+                self.ability_stat['성적'] -= 30
+            elif self.ability_stat['팀인원'] == 1:
+                self.ability_stat['성적'] -= 22
+            elif self.ability_stat['팀인원'] == 2:
+                self.ability_stat['성적'] -= 14
+            elif self.ability_stat['팀인원'] == 3:
+                self.ability_stat['성적'] -= 7
             self.load_ending_branch()
         else:
             self.end_game()
@@ -576,4 +584,9 @@ class GameScreen(Screen):
     def end_game(self):
         self.privious_name = "mainmenu"
         app = App.get_running_app()
-        app.game_ending('BAD')
+        if self.ability_stat["성적"] > 90:
+            app.game_ending('HIDDEN')
+        elif self.ability_stat["성적"] > 80:
+            app.game_ending('NORMAL')
+        else:
+            app.game_ending('BAD')
