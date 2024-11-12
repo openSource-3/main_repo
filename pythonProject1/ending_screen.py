@@ -18,6 +18,9 @@ class EndingScreen(Screen):
         elif game_result == 'NORMAL':
             self.image_source = 'public/image/ending_screen/normal-ending.jpg'
             ending_text_file = './public/script/normal-ending.txt'
+        elif game_result == 'GOOD':
+            self.image_source = 'public/image/ending_screen/good-ending.jpg'
+            ending_text_file = './public/script/good-ending.txt'
         elif game_result == 'HIDDEN':
             self.image_source = 'public/image/ending_screen/hidden-ending.jpeg'
             ending_text_file = './public/script/hidden-ending.txt'

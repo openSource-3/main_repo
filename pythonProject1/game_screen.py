@@ -587,6 +587,8 @@ class GameScreen(Screen):
         if self.ability_stat["성적"] > 90:
             app.game_ending('HIDDEN')
         elif self.ability_stat["성적"] > 80:
+            app.game_ending('GOOD')
+        elif self.ability_stat["성적"] > 70:
             app.game_ending('NORMAL')
         else:
             app.game_ending('BAD')
