@@ -43,7 +43,7 @@ class ClickableLabel(ButtonBehavior, Label):
 
 
 class GameScreen(Screen):
-    ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0}
+    ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0}
     main = True
     on_choice_able = False
     day = 0
@@ -174,7 +174,7 @@ class GameScreen(Screen):
         self.saved_re_position = ""
         self.is_waiting_for_click = False
         self.text_area.text = ""
-        self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0}
+        self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
@@ -254,6 +254,10 @@ class GameScreen(Screen):
 
     # 자동으로 텍스트를 출력하는 함수 이벤트 분기 확인
     def start_automatic_text(self, dt=None):
+        if self.day % 2 == 0:
+            self.ability_stat["day"] = 1
+        else:
+            self.ability_stat["day"] = 0
         while self.current_line < len(self.story_lines):  # 전체 내용 탐색
             line = self.story_lines[self.current_line].strip()  # 한 줄씩 입력받음
 
@@ -278,10 +282,24 @@ class GameScreen(Screen):
                     self.set_choices_from_story(self.current_line)
                     return
                 elif line.startswith("#") and not self.reaction_part:  # 첫 번째 글자가 #일 때, 리액션 파트가 아닐 경우
+                    if ":?" in line:  # 조건문이 포함된 경우 파싱
+                        print("조건이 포함된 리액션 파트 발견")
+                        condition_part, else_part = self.parse_conditional_reaction(line[1:])  # '#' 이후를 전달
+
+                        # 조건이 참일 경우
+                        if condition_part is not None:
+                            self.reaction_line = "#" + condition_part
+                        else:
+                            # 조건이 거짓일 경우
+                            self.reaction_line = "#" + else_part
+                    else:
+                        # 조건문이 없을 경우 기존 방식으로 reaction_line을 설정
+                        self.reaction_line = line
+
                     print("랜덤 이벤트 OR 리액션 파트 진입 성공")
                     self.main = False
-                    self.reaction_line = line
-                    self.load_alternate_story(self.current_line + 1, line)  # 세이브 텍스트 라인 설정 후 이벤트 스토리 or 리액션 파트 진입
+                    self.load_alternate_story(self.current_line + 1,
+                                              self.reaction_line)  # 세이브 텍스트 라인 설정 후 이벤트 스토리 or 리액션 파트 진입
                     return
                 elif (line.startswith("#") and line != self.reaction_line) or line == "pass":  # 리액션 파트 종료 시
                     print("리액션 파트 종료")
@@ -342,6 +360,7 @@ class GameScreen(Screen):
         else:
             self.previous_name = "mainmenu"
             self.end_game()
+
 
     def set_choices_from_story(self, start_index):
         choices = []
@@ -438,6 +457,26 @@ class GameScreen(Screen):
         else:
             # 조건이 거짓이면 else_part를 선택지 텍스트로 사용하고 조정값 추출
             return else_part
+
+    def parse_conditional_reaction(self, line_text):
+        main_part, conditional_part = line_text.split(":", 1)  # 참일 때 실행 문장과 나머지로 분리
+        condition, else_part = conditional_part.split("?", 1)  # 조건문과 거짓일 때 실행 문장으로 분리
+
+        # 조건문 해석
+        stat_name = ''.join([char for char in condition if char.isalpha()])  # 영어 또는 한글만 출력 (변경 스탯)
+        stat_value = int(''.join([char for char in condition if char.isdigit()]))  # 숫자만 출력 (변경값)
+        operator = ''.join([char for char in condition if not char.isalnum()])  # 특수문자만 출력 (조건문 부등호)
+
+        # stat 딕셔너리에서 현재 능력치를 확인
+        current_stat_value = self.ability_stat.get(stat_name, 0)  # 키가 존재하지 않을 경우 0 반환
+
+        # 조건 비교
+        if self.evaluate_condition(current_stat_value, stat_value, operator):
+            # 조건이 참이면 main_part 반환
+            return main_part, None
+        else:
+            # 조건이 거짓이면 else_part 반환
+            return None, else_part
 
     # 텍스트 파일의 조건문에 대한 판별 함수
     def evaluate_condition(self, current_value, target_value, operator):
@@ -610,10 +649,20 @@ class GameScreen(Screen):
         self.choice4.text = ""
 
     def load_alternate_story(self, saved_position, line):
-        self.save_file_name = self.file_name  # 현재 파일 이름 저장
-        self.saved_re_position = saved_position  # 현재 위치 저장
+        if line == "# lecture":
+            # 1~3 사이의 랜덤 정수를 생성하여 파일 이름 결정
+            lecture_num = random.randint(1, 3)
+            lecture_file_name = f"lecture_{lecture_num}.txt"
 
-        if line == "#":
+            print(f"강의 파트 파일 로드: {lecture_file_name}")
+
+            # 강의 파트 파일 읽어들이기
+            self.story_lines = self.read_story_text(lecture_file_name).splitlines()
+            self.current_line = 0  # 강의 파트의 첫 번째 줄부터 시작
+            self.saved_position = saved_position  # 위치 저장
+            self.event = True  # 이벤트와 유사한 별도의 강의 파트
+            Clock.schedule_once(self.start_automatic_text, 0.5)
+        elif line == "#":
             # 랜덤 이벤트용 파일을 불러오기
             self.event = True
             self.story_lines = self.read_story_text(self.sub_event_story()).splitlines()
@@ -632,10 +681,10 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
 
     def sub_event_story(self):
-        #sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt"]
+        #sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt"]
         num = random.randint(0, 4)
         print("진입확인", num)
-        return "./event_story/" + "c.txt"
+        return "./event_story/" + "h.txt"
 
     def reaction_text(self):
         # 선택된 버튼의 reaction_number를 기준으로 텍스트 파일을 선택
