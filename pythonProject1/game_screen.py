@@ -44,7 +44,7 @@ class ClickableLabel(ButtonBehavior, Label):
 
 class GameScreen(Screen):
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                    "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0}
+                    "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1}
     main = True
     on_choice_able = False
     day = 0
@@ -176,7 +176,7 @@ class GameScreen(Screen):
         self.is_waiting_for_click = False
         self.text_area.text = ""
         self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                             "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0}
+                             "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
