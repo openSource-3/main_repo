@@ -43,7 +43,8 @@ class ClickableLabel(ButtonBehavior, Label):
 
 
 class GameScreen(Screen):
-    ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0}
+    ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
+                    "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0}
     main = True
     on_choice_able = False
     day = 0
@@ -174,7 +175,8 @@ class GameScreen(Screen):
         self.saved_re_position = ""
         self.is_waiting_for_click = False
         self.text_area.text = ""
-        self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0, "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0}
+        self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
+                             "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
@@ -282,20 +284,11 @@ class GameScreen(Screen):
                     self.set_choices_from_story(self.current_line)
                     return
                 elif line.startswith("#") and not self.reaction_part:  # 첫 번째 글자가 #일 때, 리액션 파트가 아닐 경우
-                    if ":?" in line:  # 조건문이 포함된 경우 파싱
+                    self.reaction_line = line
+                    while ":" in self.reaction_line and "?" in self.reaction_line:  # 조건문이 포함된 경우 파싱
                         print("조건이 포함된 리액션 파트 발견")
-                        condition_part, else_part = self.parse_conditional_reaction(line[1:])  # '#' 이후를 전달
-
-                        # 조건이 참일 경우
-                        if condition_part is not None:
-                            self.reaction_line = "#" + condition_part
-                        else:
-                            # 조건이 거짓일 경우
-                            self.reaction_line = "#" + else_part
-                    else:
-                        # 조건문이 없을 경우 기존 방식으로 reaction_line을 설정
-                        self.reaction_line = line
-
+                        # `self.reaction_line`에서 조건문을 파싱
+                        self.reaction_line = "#" + self.parse_conditional_reaction(self.reaction_line[1:])  # '#' 이후 전달
                     print("랜덤 이벤트 OR 리액션 파트 진입 성공")
                     self.main = False
                     self.load_alternate_story(self.current_line + 1,
@@ -381,8 +374,11 @@ class GameScreen(Screen):
                     choice_text = choice_text[:-1]
 
                 # 조건문이 포함된 경우 처리
-                if ":" in choice_text and "?" in choice_text:
-                    choice_text = self.parse_conditional_choice(choice_text)
+                while(True):
+                    if ":" in choice_text and "?" in choice_text:
+                        choice_text = self.parse_conditional_choice(choice_text)
+                    else:
+                        break
 
                 # 확률값이 있는 경우 처리
                 if "*" in choice_text:
@@ -473,10 +469,10 @@ class GameScreen(Screen):
         # 조건 비교
         if self.evaluate_condition(current_stat_value, stat_value, operator):
             # 조건이 참이면 main_part 반환
-            return main_part, None
+            return main_part
         else:
             # 조건이 거짓이면 else_part 반환
-            return None, else_part
+            return else_part
 
     # 텍스트 파일의 조건문에 대한 판별 함수
     def evaluate_condition(self, current_value, target_value, operator):
@@ -731,4 +727,11 @@ class GameScreen(Screen):
     def end_game(self):
         self.privious_name = "mainmenu"
         app = App.get_running_app()
-        app.game_ending('BAD')
+        if self.ability_stat["성적"] > 90:
+            app.game_ending('HIDDEN')
+        elif self.ability_stat["성적"] > 80:
+            app.game_ending('GOOD')
+        elif self.ability_stat["성적"] > 70:
+            app.game_ending('NORMAL')
+        else:
+            app.game_ending('BAD')

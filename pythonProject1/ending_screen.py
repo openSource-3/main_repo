@@ -1,8 +1,12 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from kivy.uix.button import Button
+from kivy.properties import StringProperty
+
 
 class EndingScreen(Screen):
+    image_source = StringProperty('public/image/ending_screen/background.jpg')
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.full_text_lines = []
@@ -11,12 +15,18 @@ class EndingScreen(Screen):
 
     def show_ending(self, game_result):
         if game_result == 'BAD':
+            self.image_source = 'public/image/ending_screen/bad-ending.jpg'
             ending_text_file = './public/script/bad-ending.txt'
-        elif game_result == 'HAPPY':
-            ending_text_file = './public/script/happy-ending.txt'
+        elif game_result == 'NORMAL':
+            self.image_source = 'public/image/ending_screen/normal-ending.jpg'
+            ending_text_file = './public/script/normal-ending.txt'
+        elif game_result == 'GOOD':
+            self.image_source = 'public/image/ending_screen/good-ending.jpg'
+            ending_text_file = './public/script/good-ending.txt'
         elif game_result == 'HIDDEN':
+            self.image_source = 'public/image/ending_screen/hidden-ending.jpeg'
             ending_text_file = './public/script/hidden-ending.txt'
-        
+
         with open(ending_text_file, "r", encoding='utf-8') as file:
             self.full_text_lines = file.readlines()
 

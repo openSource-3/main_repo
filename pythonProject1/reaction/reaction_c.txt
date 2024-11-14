@@ -45,3 +45,49 @@ pass
 전공 서적은 재미없었지만 공부하는 의미는 있었습니다.
 관련 지식이 늘은 기분이 듭니다.
 -뭐, 도움은 됐네.%컴퓨터기술1
+
+# midterm_exam - 1
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 2
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 3
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 4
+GRANT는 DCL(Data Control Language)에 속해,
+사용자 권한을 부여하거나 제어하는 데 사용되지
+반면, SELECT, INSERT, UPDATE는
+데이터를 조작하는 DML(Data Manipulation Language)에 속하지
+
+# midterm_exam - 5
+내가 고른 답이 맞겠지..?
+
+# final_exam - 1
+내가 고른 답이 맞겠지..?
+
+# final_exam - 2
+내가 고른 답이 맞겠지..?
+
+# final_exam - 3
+메모리 관리에서 사용하는 방법 중 하나로,
+운영체제가 메모리에서 사용하지 않는
+페이지를 교체하는 방식을 결정하는 알고리즘에 대한 문제네
+페이지 교체 알고리즘 중 LFU(Least Frequently Used)와
+비슷해서 혼동하기 쉽게 낸 문제 같네
+
+# final_exam - 4
+내가 고른 답이 맞겠지..?
+
+# final_exam - 5
+내가 고른 답이 맞겠지..?
+
+# final_exam - 6
+pass
+
+# final_exam - 7
+Knowledge Intelligence Lab. (KILab)
+https://sites.google.com/view/ki-lab
+Contact: parkce@hanbat.ac.kr
+-관심있으면 참고하면 좋을 것 같다
