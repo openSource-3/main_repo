@@ -44,7 +44,7 @@ class ClickableLabel(ButtonBehavior, Label):
 
 class GameScreen(Screen):
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                    "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1}
+                    "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1, "저녁약속" : 0}
     main = True
     on_choice_able = False
     day = 0
@@ -176,7 +176,7 @@ class GameScreen(Screen):
         self.is_waiting_for_click = False
         self.text_area.text = ""
         self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                             "속독": 0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1}
+                             "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1, "저녁약속" : 0}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
@@ -661,8 +661,12 @@ class GameScreen(Screen):
         elif line == "#":
             # 랜덤 이벤트용 파일을 불러오기
             self.event = True
-            self.story_lines = self.read_story_text(self.sub_event_story()).splitlines()
-            self.current_line = 0
+            file_name = self.sub_event_story()
+            self.story_lines = self.read_story_text(file_name).splitlines()
+            if file_name == "./event_story/i.txt" and self.ability_stat["저녁약속"] == 1:
+                self.current_line = 15
+            else:
+                self.current_line = 0
             self.saved_position = saved_position
             Clock.schedule_once(self.start_automatic_text, 0.5)
         else:
@@ -677,10 +681,10 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
 
     def sub_event_story(self):
-        #sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt"]
-        num = random.randint(0, 4)
+        sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt", "i.txt"]
+        num = random.randint(0, len(sub_event_list)-1)
         print("진입확인", num)
-        return "./event_story/" + "h.txt"
+        return "./event_story/" + "i.txt"
 
     def reaction_text(self):
         # 선택된 버튼의 reaction_number를 기준으로 텍스트 파일을 선택
