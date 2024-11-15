@@ -1,0 +1,93 @@
+# Start
+건강이 최고죠!
+잘 먹어야 공부도 잘한다고요
+
+# event_b - 2
+아이고.. 져버렸네요.
+-이런...&멘탈1
+
+# event_b - 3
+아이고.. 져버렸네요.
+-이런...&멘탈1
+
+# event_b - 4
+아이고.. 져버렸네요.
+-이런...&멘탈1
+
+# event_b - 5
+당신은 시간가는 줄도 모르고 계속 게임을 했어요.
+그 뒤로는 제가 말려도 계속 게임을 하던데요?
+오늘 공부한 것도 잊을 정도로요.
+-재밌다 재밌어!&집중도1&허기1지능&1
+
+# event_b - 6
+당신은 시간가는 줄도 모르고 계속 게임을 했어요.
+그 뒤로는 제가 말려도 계속 게임을 하던데요?
+오늘 공부한 것도 잊을 정도로요.
+-재밌다 재밌어!&집중도1&허기1지능&1
+
+# event_c - 2
+하기 싫으면 어쩔 수 없죠.
+집에 돌아가요.
+-잠이나 자야지_
+
+# event_d - 2
+어? 안 하시게요? 보니깐 강의 시간도 1~2시간이라 적당할 것 같은데?
+-응 그냥 안 하게
+
+알았어요. 그럼 좀 쉬고 있어요.
+-그래야겠다%집중도1_
+
+# event_e - 1
+pass
+
+# event_h - 2
+전공 서적은 재미없었지만 공부하는 의미는 있었습니다.
+관련 지식이 늘은 기분이 듭니다.
+-뭐, 도움은 됐네.%컴퓨터기술1
+
+# midterm_exam - 1
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 2
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 3
+내가 고른 답이 맞겠지..?
+
+# midterm_exam - 4
+GRANT는 DCL(Data Control Language)에 속해,
+사용자 권한을 부여하거나 제어하는 데 사용되지
+반면, SELECT, INSERT, UPDATE는
+데이터를 조작하는 DML(Data Manipulation Language)에 속하지
+
+# midterm_exam - 5
+내가 고른 답이 맞겠지..?
+
+# final_exam - 1
+내가 고른 답이 맞겠지..?
+
+# final_exam - 2
+내가 고른 답이 맞겠지..?
+
+# final_exam - 3
+메모리 관리에서 사용하는 방법 중 하나로,
+운영체제가 메모리에서 사용하지 않는
+페이지를 교체하는 방식을 결정하는 알고리즘에 대한 문제네
+페이지 교체 알고리즘 중 LFU(Least Frequently Used)와
+비슷해서 혼동하기 쉽게 낸 문제 같네
+
+# final_exam - 4
+내가 고른 답이 맞겠지..?
+
+# final_exam - 5
+내가 고른 답이 맞겠지..?
+
+# final_exam - 6
+pass
+
+# final_exam - 7
+Knowledge Intelligence Lab. (KILab)
+https://sites.google.com/view/ki-lab
+Contact: parkce@hanbat.ac.kr
+-관심있으면 참고하면 좋을 것 같다
