@@ -44,7 +44,7 @@ class ClickableLabel(ButtonBehavior, Label):
 
 class GameScreen(Screen):
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                    "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1, "저녁약속" : 0}
+                    "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0}
     main = True
     on_choice_able = False
     day = 0
@@ -60,10 +60,31 @@ class GameScreen(Screen):
 
     event = False
 
+    listeners = []  # 변수 연결용
+
     def __init__(self, screen_manager=None, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
         self.screen_manager = screen_manager  # ScreenManager 인스턴스 저장
         self.build()
+
+    @classmethod
+    def add_listener(cls, listener):
+        """변경 사항을 알리기 위한 리스너를 추가합니다."""
+        cls.listeners.append(listener)
+
+    @classmethod
+    def update_stat(cls, stat_name='day', value='0'):
+        """능력치를 업데이트하고 리스너에게 변경 사항을 알립니다."""
+        if stat_name in cls.ability_stat:
+            cls.ability_stat[stat_name] = value
+            cls.notify_listeners()  # 모든 리스너에게 변경 사항 알림
+            print("리스너 변경사항 전달")
+
+    @classmethod
+    def notify_listeners(cls):
+        """모든 리스너에게 능력치 변경을 알립니다."""
+        for listener in cls.listeners:
+            listener(cls.ability_stat)
 
     def build(self):
         print("빌드 실행")
@@ -176,12 +197,14 @@ class GameScreen(Screen):
         self.is_waiting_for_click = False
         self.text_area.text = ""
         self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                             "속독": 0, "창의력":0, "성적": 100, "돈": 3, "집중도": 3, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 1, "저녁약속" : 0}
+                             "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
 
         self.event = False
+
+        self.listeners = [] # 변수 연결용
 
     def on_enter(self):
         # GameScreen에 들어왔을 때 텍스트 출력을 시작합니다.
@@ -201,7 +224,15 @@ class GameScreen(Screen):
         self.previous_name = "other"
 
     def open_progress_page(self, instance):
-        self.screen_manager.current = 'progress'  # 'progress' 화면으로 전환
+        # 'progress' 화면 가져오기
+        progress_screen = self.screen_manager.get_screen('progress')
+        progress_layout = progress_screen.children[0]  # ProgressPage 인스턴스
+
+        progress_compo = progress_layout.progress_compo
+
+        progress_compo.update_day_stat(self.day)  # update_day 메서드를 추가해 self.day 값을 반영하도록 함
+        # progress 화면으로 전환
+        self.screen_manager.current = 'progress'
         self.previous_name = "other"
     # 윈도우 크기가 변경될 때 비율 조정
     def adjust_layout(self, instance, width, height):
@@ -590,9 +621,6 @@ class GameScreen(Screen):
             # None일 경우 빈 리스트로 처리
             if adjustments is None:
                 adjustments = []
-            else:
-                stat_text += "[color=808080]|[/color] "
-
             # 여러 능력치 조정 처리
             for adjustment in adjustments:
                 if adjustment:
@@ -603,11 +631,13 @@ class GameScreen(Screen):
                             if stat_name in ["돈", "집중도", "멘탈"] and self.ability_stat[stat_name] > 3:
                                 # ["돈", "집중도", "멘탈"] 스탯이 최대 스탯인 3을 넘을 경우
                                 self.ability_stat[stat_name] = 3  # 더해져도 최대치 3으로 설정
-                            elif stat_name != "성적":  # 성적이 아닐 경우에는 능력치 조정 수치가 텍스트에 보임
+                            elif stat_name in list(self.ability_stat.keys())[0:10]:  # 능력치 부분은 능력치 조정 수치가 텍스트에 보임
+                                stat_text += "[color=808080]|[/color] "
                                 stat_text += f"[color=A5FFC9]{stat_name} {operation}{stat_value}[/color]  "
                         elif operation == "-" and self.ability_stat[stat_name] >= 1:
                             self.ability_stat[stat_name] -= stat_value
-                            if stat_name != "성적":
+                            if stat_name in list(self.ability_stat.keys())[0:10]:
+                                stat_text += "[color=808080]|[/color] "
                                 stat_text += f"[color=FFA5A5]{stat_name} {operation}{stat_value}[/color]  "
                         print(f"{stat_name} 능력치가 {operation}{stat_value}만큼 조정되었습니다.")
                     else:
@@ -663,7 +693,7 @@ class GameScreen(Screen):
             self.event = True
             file_name = self.sub_event_story()
             self.story_lines = self.read_story_text(file_name).splitlines()
-            if file_name == "./event_story/i.txt" and self.ability_stat["저녁약속"] == 1:
+            if file_name == "./event_story/i.txt" and self.ability_stat["저녁약속"] == 1 and self.ability_stat["dinner"] == 0:#저녁 약속이 존재하고 지금이 저녁인 경우
                 self.current_line = 15
             else:
                 self.current_line = 0
@@ -684,7 +714,10 @@ class GameScreen(Screen):
         sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt", "i.txt"]
         num = random.randint(0, len(sub_event_list)-1)
         print("진입확인", num)
-        return "./event_story/" + "i.txt"
+        if self.ability_stat["dinner"] == 0 and self.ability_stat["저녁약속"] == 1:
+            return "./event_story/" + "i.txt"
+        else:
+            return "./event_story/" + "i.txt"
 
     def reaction_text(self):
         # 선택된 버튼의 reaction_number를 기준으로 텍스트 파일을 선택
