@@ -106,13 +106,18 @@ class GameScreen(Screen):
             markup=True,
         )
 
-        # 텍스트 영역 클릭 시 다음 줄로 이동
-        self.text_area.bind(on_press=self.on_click_next_text)
+        # 텍스트 영역 배경을 하얀색으로 설정
+        with self.text_area.canvas.before:
+            Color(0, 0, 0, 1)  # 검은색
+            self.text_bg_rect = Rectangle(size=self.text_area.size, pos=self.text_area.pos)
 
+        # 텍스트 영역 크기 및 위치 변경 시 배경 업데이트
+        self.text_area.bind(size=self.update_text_background, pos=self.update_text_background)
+        self.text_area.bind(on_touch_down=self.on_click_next_text)
         # 오른쪽 레이아웃 (1/8 공간에 능력창과 진척도창 버튼 추가)
         self.right_layout = BoxLayout(orientation='vertical', size_hint=(1 / 8, 1))
 
-        # 능력창 및 진척도창 버튼 추가, 크기 1/4로 줄임
+        # 능력창 및 진척도창 버튼 추가
         self.ability_button = Button(text="능력창", font_name=fontName_Regular, size_hint=(1, 0.15))
         self.progress_button = Button(text="진척도", font_name=fontName_Regular, size_hint=(1, 0.15))
 
@@ -175,11 +180,39 @@ class GameScreen(Screen):
         self.main_layout.add_widget(self.middle_layout)  # 가운데 레이아웃 (텍스트 + 오른쪽 버튼 및 빈 공간)
         self.main_layout.add_widget(self.choice_layout)  # 선택지 영역
 
+        # 메인 레이아웃을 먼저 추가
+        self.add_widget(self.main_layout)
+
+        self.image_overlay = Widget()
+        with self.image_overlay.canvas:
+            self.image_rect = Rectangle(
+                source="",  # 초기 상태에서 이미지를 비움
+                size=(self.text_area.size[0], self.text_area.size[1] / 2),
+                pos=(self.text_area.pos[0], self.text_area.pos[1] + self.text_area.size[1] / 2)
+            )
+
+        self.image_overlay.opacity = 0
+
+        # 텍스트 영역과 이미지 레이아웃 크기 및 위치 동기화
+        self.text_area.bind(pos=self.update_image_overlay, size=self.update_image_overlay)
+
+        # 이미지 오버레이를 텍스트 위에 배치
+        self.add_widget(self.image_overlay)
+
         # 윈도우 사이즈 변경 이벤트 핸들러 추가
         Window.bind(on_resize=self.adjust_layout)
 
-        self.add_widget(self.main_layout)
         self.update_stat_images()
+
+    def update_text_background(self, *args):
+        """텍스트 영역 배경 업데이트."""
+        self.text_bg_rect.size = self.text_area.size
+        self.text_bg_rect.pos = self.text_area.pos
+
+    def update_image_overlay(self, *args):
+        """이미지 레이아웃 업데이트."""
+        self.image_rect.pos = (self.text_area.pos[0], self.text_area.pos[1] + self.text_area.size[1] / 2)
+        self.image_rect.size = (self.text_area.size[0], self.text_area.size[1] / 2)
 
     def reset_game(self):
         """ 게임 상태를 초기화하는 메서드 """
@@ -237,7 +270,7 @@ class GameScreen(Screen):
     # 윈도우 크기가 변경될 때 비율 조정
     def adjust_layout(self, instance, width, height):
         # 현재 창의 비율 계산
-        self.text_area.text_size = (width * 7 / 8, None)
+        self.text_area.text_size = (width * 7 / 8-30, None)
         if width >800:
             self.text_area.font_size = 32
             self.choice1.font_size = 28
@@ -249,6 +282,7 @@ class GameScreen(Screen):
             self.choice1.font_size = 22
             self.choice2.font_size = 22
             self.choice3.font_size = 22
+            self.choice4.font_size = 22
 
     def update_stat_images(self):
         """ 스탯 값에 따라 이미지를 갱신하는 함수 """
@@ -295,6 +329,15 @@ class GameScreen(Screen):
             line = self.story_lines[self.current_line].strip()  # 한 줄씩 입력받음
 
             print(self.file_name, self.current_line, line)
+            if line.startswith("I"):  # 이미지 경로 처리
+                image_path = line[1:].strip()  # 'I' 이후 경로 추출
+                print(f"이미지 경로 감지: {image_path}")
+                self.update_image_source(image_path)  # 이미지 업데이트
+                self.current_line += 1  # 다음 줄로 이동
+                self.image_overlay.opacity = 1
+                self.text_area.text = "\n\n\n\n"
+                Clock.schedule_once(self.start_automatic_text, 0.5)
+                return
             if self.reaction_part:  # 리액션 파트에 돌입했을 경우
                 if line.startswith("#") and line == self.reaction_line:  # 내가 원하는 리액션 파트 진입
                     print("내가 원하는 리액션 파트 진입 성공")
@@ -385,6 +428,11 @@ class GameScreen(Screen):
             self.previous_name = "mainmenu"
             self.end_game()
 
+    def update_image_source(self, image_path):
+        """이미지 오버레이에 새로운 이미지를 설정."""
+        if self.image_rect:
+            self.image_rect.source = image_path  # 이미지 경로 업데이트
+            self.image_overlay.canvas.ask_update()  # 캔버스 업데이트 요청
 
     def set_choices_from_story(self, start_index):
         choices = []
@@ -589,6 +637,9 @@ class GameScreen(Screen):
         if self.is_waiting_for_click:
             self.is_waiting_for_click = False  # 클릭을 기다리는 상태를 해제
             self.text_area.text = ""  # 텍스트 영역 초기화
+            if self.image_rect.source != "":
+                self.image_rect.source = ""
+                self.image_overlay.opacity = 0  # 이미지 레이아웃을 숨김
             self.current_line += 1
             self.start_automatic_text()
 
@@ -667,6 +718,9 @@ class GameScreen(Screen):
                 self.start_automatic_text()
                 self.update_stat_images()
             print(self.ability_stat)
+            if self.image_rect.source != "":
+                self.image_rect.source = ""
+                self.image_overlay.opacity = 0  # 이미지 레이아웃을 숨김
 
     def clear_choices(self):
         self.choice1.text = ""
