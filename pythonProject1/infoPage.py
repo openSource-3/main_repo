@@ -3,26 +3,21 @@ from kivy.core.text import LabelBase
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.floatlayout import FloatLayout
 
 class FontManager:
     """커스텀 폰트 등록을 위한 클래스."""
-
     @staticmethod
     def register_fonts():
         """H2GPRM 폰트를 등록합니다."""
         font_path = os.path.join(os.path.dirname(__file__), 'H2GPRM.ttf')
         LabelBase.register(name='H2GPRM', fn_regular=font_path)
 
-
-class InfoPage(BoxLayout):
+class InfoPage(FloatLayout):
     """사용자 정보와 능력치를 출력하는 UI 페이지를 구성하는 클래스."""
     def __init__(self, screen_manager=None, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
-
-        self.orientation = 'vertical'
-        self.padding = [10, 10]
-        self.spacing = 10
         self.userName = "김한밭"
         self.userState = "한밭대학교 5학년 2학기 재학 중이다."
         self.userTrait = "처음 선택한 특성에 관한 문구"
@@ -33,6 +28,7 @@ class InfoPage(BoxLayout):
         GameScreen.add_listener(self.on_stat_update)  # 리스너 추가
         self.ability_stat = GameScreen.ability_stat  # 초기 능력치 불러오기
 
+        # UI 구성
         self.setup_ui()
 
     def on_stat_update(self, stat):
@@ -57,44 +53,51 @@ class InfoPage(BoxLayout):
 
     def setup_ui(self):
         """UI를 구성하고 초기화합니다."""
-        self.add_widget(Label(text='', size_hint_y=None, height=10))  # 한 칸 띄우기
-        self.add_widget(Label(
-            text='__정보__', font_size='24sp', bold=True,
-            size_hint_y=None, height=40, font_name='H2GPRM',
-            size_hint_x=None, width=160
-        ))
-        self.add_widget(Label(text='', size_hint_y=None, height=10))  # 한 칸 띄우기
-        self.add_widget(Label(
-            text=self.get_info(), font_size='18sp',
-            size_hint_y=None, height=100, font_name='H2GPRM',
-            text_size=(490, None), size_hint_x=0.5
-        ))
-        self.add_widget(Label(text='\n', size_hint_y=None, height=20))  # 두 칸 띄우기
+        # 텍스트 레이아웃
+        text_layout = BoxLayout(
+            orientation='vertical',
+            size_hint=(1, None),
+            height=400,
+            pos_hint={'top': 0.9},  # top 위치를 0.9로 변경해 1cm 정도 아래로 이동
+            spacing=10  # 위젯 간 간격 추가
+        )
 
-        self.add_widget(Label(
-            text='__능력치__', font_size='24sp', bold=True,
-            size_hint_y=None, height=40, font_name='H2GPRM',
-            size_hint_x=None, width=200
-        ))
-        self.add_widget(Label(text='', size_hint_y=None, height=20))  # 여백 추가
+        # 정보 제목
+        text_layout.add_widget(self.create_label('__정보__', font_size='24sp', height=40, bold=True, padding_y=38))
 
+        # 사용자 정보
+        text_layout.add_widget(self.create_label(self.get_info(), font_size='18sp', height=100, padding_y=38))
+
+        # 능력치 제목
+        text_layout.add_widget(self.create_label('__능력치__', font_size='24sp', height=40, bold=True, padding_y=38))
+
+        # 능력치 리스트
         for name, level in self.ability_stat.items():
             description = self.get_ability_description(name)
             if description != "설명이 없습니다.":
-                print(f"Name: {name}, Level: {level}")
-
                 formatted_text = f'  {name} : Lv {level} : "{description}"'
-                ability_label = Label(
-                    text=formatted_text, font_size='18sp',
-                    size_hint_y=None, height=30,
-                    font_name='H2GPRM',
-                    text_size=(800, None)
-                )
-                ability_label.bind(size=ability_label.setter('text_size'))
-                self.add_widget(ability_label)
+                text_layout.add_widget(self.create_label(formatted_text, font_size='18sp', height=30, padding_y=38))
 
-        self.add_widget(Label(text='', size_hint_y=None, height=20))  # 여백 추가
+        # 텍스트 레이아웃 추가
+        self.add_widget(text_layout)
+
+        # 돌아가기 버튼
         self.add_widget(self.create_back_button())
+
+    def create_label(self, text, font_size, height, bold=False, padding_y=0):
+        """공통적으로 사용되는 Label을 생성."""
+        return Label(
+            text=text,
+            font_size=font_size,
+            bold=bold,
+            size_hint=(None, None),  # 크기를 고정
+            width=800, height=height,  # 기존 높이를 유지
+            font_name='H2GPRM',
+            halign='left',
+            valign='middle',  # 텍스트 세로 정렬 유지
+            text_size=(800, None),  # 텍스트 너비 고정
+            padding=(50, padding_y)  # 패딩 추가: Y축으로 아래로 이동
+        )
 
     def get_ability_description(self, name):
         """각 능력치의 설명을 반환합니다."""
@@ -112,10 +115,13 @@ class InfoPage(BoxLayout):
     def create_back_button(self):
         """돌아가기 버튼 생성."""
         back_button = Button(
-            text='> 돌아간다', size_hint=(None, 1), width=200,
+            text='> 돌아간다',
+            size_hint=(None, None),  # 고정 크기로 설정
+            width=200, height=50,  # 버튼 크기 설정
             font_name='H2GPRM', font_size=24,
             background_color=(0, 0, 0, 1),
-            color=(1, 1, 1, 1)
+            color=(1, 1, 1, 1),
+            pos_hint={'x': 0.05, 'y': 0.05}  # 왼쪽 아래에 위치
         )
         back_button.bind(on_press=self.on_button_clicked)
         return back_button

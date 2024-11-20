@@ -17,6 +17,8 @@ from kivy.uix.image import Image
 from infoPage import InfoPage, FontManager
 from progressPage import ProgressPage
 import re
+from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 
 fontName_Bold = 'GowunBatang-Bold.ttf'
 fontName_Regular = 'GowunBatang-Regular.ttf'
@@ -340,6 +342,12 @@ class GameScreen(Screen):
                 self.text_area.text = "\n\n\n\n"
                 Clock.schedule_once(self.start_automatic_text, 0.5)
                 return
+            elif line.startswith("A"):
+                audio_path = line[1:].strip()  # 'A' 이후 경로 추출
+                print(f"사운드 경로 감지: {audio_path}")
+                self.play_audio(audio_path)  # 사운드 재생
+                self.current_line += 1  # 다음 줄로 이동
+                continue
             if self.reaction_part:  # 리액션 파트에 돌입했을 경우
                 if line.startswith("#") and line == self.reaction_line:  # 내가 원하는 리액션 파트 진입
                     print("내가 원하는 리액션 파트 진입 성공")
@@ -435,6 +443,18 @@ class GameScreen(Screen):
         if self.image_rect:
             self.image_rect.source = image_path  # 이미지 경로 업데이트
             self.image_overlay.canvas.ask_update()  # 캔버스 업데이트 요청
+
+    def play_audio(self, audio_path):
+        """지정된 경로의 사운드를 재생."""
+        if hasattr(self, 'sound') and self.sound:
+            self.sound.stop()  # 기존에 재생 중인 사운드 정지
+
+        self.sound = SoundLoader.load(audio_path)  # 새로운 사운드 로드
+        if self.sound:
+            print(f"사운드 재생 중: {audio_path}")
+            self.sound.play()  # 사운드 재생
+        else:
+            print(f"사운드 파일을 찾을 수 없습니다: {audio_path}")
 
     def set_choices_from_story(self, start_index):
         choices = []
@@ -783,7 +803,8 @@ class GameScreen(Screen):
             #동아리가 1인것은 홍보부스 - 하트비트 동아리 이벤트 2인 경우 체험부스 - 봉사활동 동아리 이벤트로 넘어감
             return "./event_story/" + f'j-{self.ability_stat["동아리"]}.txt'
         else:
-            return "./event_story/" + f"{sub_event_list[num]}"
+            return "./event_story/" + "a.txt"
+            #return "./event_story/" + f"{sub_event_list[num]}"
 
     def reaction_text(self):
         # 선택된 버튼의 reaction_number를 기준으로 텍스트 파일을 선택

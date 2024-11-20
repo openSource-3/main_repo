@@ -81,14 +81,25 @@ class ProgressPageCompo(BoxLayout):
         self.update_progress_rect()
 
     def create_back_button(self):
-        """뒤로가기 버튼을 생성합니다."""
+        """다른 UI 요소에 영향을 미치지 않고 독립적으로 위치하는 뒤로가기 버튼을 생성합니다."""
+        # FloatLayout을 사용하여 버튼을 독립적으로 배치
+        float_layout = FloatLayout(size_hint=(1, None), height=60)
+
         back_button = Button(
-            text='> 돌아간다', size_hint=(None, 1), width=200,
-            font_name='H2GPRM', font_size=24,
-            background_color=(0, 0, 0, 1), color=(1, 1, 1, 1)
+            text='> 돌아간다',
+            size_hint=(None, None),  # 크기 고정
+            size=(200, 50),  # 버튼의 크기 설정
+            font_name='H2GPRM',
+            font_size=24,
+            background_color=(0, 0, 0, 1),
+            color=(1, 1, 1, 1),
+            pos_hint={'center_x': 0.5, 'y': 0}  # 수평 중앙에 배치, y는 FloatLayout의 아래쪽
         )
         back_button.bind(on_press=self.on_button_clicked)
-        return back_button
+
+        # 버튼을 FloatLayout에 추가
+        float_layout.add_widget(back_button)
+        return float_layout
 
     def on_button_clicked(self, instance):
         """뒤로가기 버튼 클릭 시 호출됩니다."""
@@ -170,18 +181,27 @@ def ProgressPage(screen_manager):
             font_name='Malgun Gothic', size_hint=(1, None), height=150, pos_hint={'top': 0.85}
         ))
 
-    # 텍스트와 버튼 배치
+    # 텍스트 레이블을 위한 BoxLayout
     text_layout = BoxLayout(
-        orientation='vertical', size_hint=(1, 0.4),
-        pos_hint={'x': 0, 'y': 0}, padding=[10, 10, 10, 10], spacing=10
+        orientation='vertical',
+        size_hint=(1, None),  # 높이 고정을 위해 size_hint 설정
+        height=150,  # 적절한 높이 설정
+        pos_hint={'top': 0.45},
+        padding=[10, 10, 10, 10], spacing=10
     )
+
+    # 텍스트 레이블 추가
     for label in progress_compo.days_left_labels:
         text_layout.add_widget(label)
-    text_layout.add_widget(progress_compo.back_button)
+
+    # 텍스트 레이아웃을 추가
+    layout.add_widget(text_layout)
+
+    # 뒤로가기 버튼을 독립적으로 추가
+    progress_compo.back_button.pos_hint = {'center_x': 0.5, 'y': 0.1}
+    layout.add_widget(progress_compo.back_button)
 
     # 진행 바 그리기 및 중앙 배치
     progress_compo.draw_progress_rect()
 
-    # 레이아웃 구성
-    layout.add_widget(text_layout)
     return layout
