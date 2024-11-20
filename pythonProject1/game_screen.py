@@ -44,7 +44,8 @@ class ClickableLabel(ButtonBehavior, Label):
 
 class GameScreen(Screen):
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                    "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0}
+                    "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0, "동아리" : 0
+                    ,"running" : 0, "service" : 0}
     main = True
     on_choice_able = False
     day = 0
@@ -230,7 +231,8 @@ class GameScreen(Screen):
         self.is_waiting_for_click = False
         self.text_area.text = ""
         self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
-                             "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0}
+                             "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0,"동아리" : 0
+                             ,"running" : 0, "service" : 0}
         self.update_stat_images()
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
@@ -692,7 +694,7 @@ class GameScreen(Screen):
                                 stat_text += f"[color=FFA5A5]{stat_name} {operation}{stat_value}[/color]  "
                         print(f"{stat_name} 능력치가 {operation}{stat_value}만큼 조정되었습니다.")
                     else:
-                        print(f"경고: {stat_name} 능력치는 존재하지 않습니다.")
+                        self.ability_stat[stat_name] = stat_value #주어진 능력치를 추가
 
             # 선택지 버튼 텍스트 초기화 (선택 후)
             self.clear_choices()
@@ -749,6 +751,10 @@ class GameScreen(Screen):
             self.story_lines = self.read_story_text(file_name).splitlines()
             if file_name == "./event_story/i.txt" and self.ability_stat["저녁약속"] == 1 and self.ability_stat["dinner"] == 0:#저녁 약속이 존재하고 지금이 저녁인 경우
                 self.current_line = 15
+            elif file_name == "./event_story/j-1.txt":
+                self.current_line = 60 * self.ability_stat["running"]
+            elif file_name == "./event_story/j-2.txt":
+                self.current_line = 60 * self.ability_stat["service"]
             else:
                 self.current_line = 0
             self.saved_position = saved_position
@@ -765,13 +771,19 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
 
     def sub_event_story(self):
-        sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt", "i.txt"]
+        sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt", "i.txt", "j.txt"]
+        if self.ability_stat["동아리"] < 0 : #동아리 이벤트 진입 후 동아리에 들어가는 것을 거부했을 때. 동아리 이벤트를 삭제함
+            sub_event_list = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt", "i.txt"]
         num = random.randint(0, len(sub_event_list)-1)
         print("진입확인", num)
+        num = 9
         if self.ability_stat["dinner"] == 0 and self.ability_stat["저녁약속"] == 1:
             return "./event_story/" + "i.txt"
+        elif num == 9 and self.ability_stat["동아리"] > 0: #동아리 이벤트에 진입하고 난 뒤, 동아리 참가했을 때 내가 참가한 동아리 이벤트를 들어감
+            #동아리가 1인것은 홍보부스 - 하트비트 동아리 이벤트 2인 경우 체험부스 - 봉사활동 동아리 이벤트로 넘어감
+            return "./event_story/" + f'j-{self.ability_stat["동아리"]}.txt'
         else:
-            return "./event_story/" + "i.txt"
+            return "./event_story/" + f"{sub_event_list[num]}"
 
     def reaction_text(self):
         # 선택된 버튼의 reaction_number를 기준으로 텍스트 파일을 선택
