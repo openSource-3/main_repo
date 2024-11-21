@@ -343,10 +343,16 @@ class GameScreen(Screen):
                 Clock.schedule_once(self.start_automatic_text, 0.5)
                 return
             elif line.startswith("A"):
-                audio_path = line[1:].strip()  # 'A' 이후 경로 추출
-                print(f"사운드 경로 감지: {audio_path}")
-                self.play_audio(audio_path)  # 사운드 재생
-                self.current_line += 1  # 다음 줄로 이동
+                audio_path = line[1:].strip()
+
+                if audio_path:  # "A" 다음 경로가 있는 경우
+                    print(f"사운드 경로 감지: {audio_path}")
+                    self.play_audio(audio_path)  # 사운드 재생
+                else:  # "A"만 있는 경우
+                    print("사운드 페이드 아웃 요청")
+                    self.fade_out_audio()  # 사운드 페이드 아웃
+
+                self.current_line += 1
                 continue
             if self.reaction_part:  # 리액션 파트에 돌입했을 경우
                 if line.startswith("#") and line == self.reaction_line:  # 내가 원하는 리액션 파트 진입
@@ -354,6 +360,7 @@ class GameScreen(Screen):
                     self.flag = True  # 텍스트 출력 활성화
                     self.current_line += 1  # 다음 줄 탐색
                     line = self.story_lines[self.current_line].strip()
+                    continue
                 elif not self.flag:  # 내가 원하는 리액션 파트가 아닌 경우
                     self.current_line += 1  # 다음 줄 탐색
                     continue  # 다음 줄을 즉시 탐색
@@ -452,9 +459,43 @@ class GameScreen(Screen):
         self.sound = SoundLoader.load(audio_path)  # 새로운 사운드 로드
         if self.sound:
             print(f"사운드 재생 중: {audio_path}")
+            self.sound.volume = 0  # 초기 볼륨 0
             self.sound.play()  # 사운드 재생
+
+            # 사운드 길이 확인
+            if self.sound.length and self.sound.length >= 5:  # 사운드 길이가 5초 이상인 경우
+                print(f"사운드 길이: {self.sound.length}초, 점진적 볼륨 증가 시작")
+                self.fade_in_event = Clock.schedule_interval(self.increase_volume, 0.1)  # 0.1초마다 볼륨 증가
+            else:
+                print(f"사운드 길이: {self.sound.length}초, 볼륨 즉시 최대")
+                self.sound.volume = 1.0  # 볼륨을 즉시 최대치로 설정
         else:
             print(f"사운드 파일을 찾을 수 없습니다: {audio_path}")
+
+    def increase_volume(self, dt):
+        """볼륨을 점차적으로 증가."""
+        if hasattr(self, 'sound') and self.sound:
+            if self.sound.volume < 1.0:
+                self.sound.volume = min(1.0, self.sound.volume + 0.05)  # 0.05씩 증가
+            else:
+                print("볼륨 최대치 도달")
+                Clock.unschedule(self.fade_in_event)  # 볼륨 증가 중지
+
+    def fade_out_audio(self):
+        """사운드의 볼륨을 점진적으로 줄인 후 정지."""
+        if hasattr(self, 'sound') and self.sound:
+            self.fade_out_event = Clock.schedule_interval(self.reduce_volume, 0.1)  # 0.1초 간격으로 볼륨 감소
+
+    def reduce_volume(self, dt):
+        """사운드 볼륨을 감소시키는 함수."""
+        if hasattr(self, 'sound') and self.sound:
+            if self.sound.volume > 0:
+                self.sound.volume = max(0, self.sound.volume - 0.05)  # 0.05씩 감소
+            else:
+                print("사운드 정지")
+                self.sound.stop()
+                self.sound = None
+                Clock.unschedule(self.fade_out_event)  # 볼륨 감소 스케줄 취소
 
     def set_choices_from_story(self, start_index):
         choices = []
@@ -754,15 +795,17 @@ class GameScreen(Screen):
         if line == "# lecture":
             # 1~3 사이의 랜덤 정수를 생성하여 파일 이름 결정
             lecture_num = random.randint(1, 3)
-            lecture_file_name = f"lecture_{lecture_num}.txt"
+            lecture_file_name = f"lecture_{lecture_num+3*self.ability_stat['dinner']}.txt"
 
             print(f"강의 파트 파일 로드: {lecture_file_name}")
 
             # 강의 파트 파일 읽어들이기
+            self.save_file_name = self.file_name  # 리액션 텍스트에 돌입하기 전 기존 텍스트 파일의 이름을 저장
             self.story_lines = self.read_story_text(lecture_file_name).splitlines()
             self.current_line = 0  # 강의 파트의 첫 번째 줄부터 시작
-            self.saved_position = saved_position  # 위치 저장
-            self.event = True  # 이벤트와 유사한 별도의 강의 파트
+            self.saved_re_position = saved_position
+            self.reaction_part = True  # 리액션 이벤트와 유사한 별도의 강의 파트
+            self.flag = False
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif line == "#":
             # 랜덤 이벤트용 파일을 불러오기
@@ -803,7 +846,7 @@ class GameScreen(Screen):
             #동아리가 1인것은 홍보부스 - 하트비트 동아리 이벤트 2인 경우 체험부스 - 봉사활동 동아리 이벤트로 넘어감
             return "./event_story/" + f'j-{self.ability_stat["동아리"]}.txt'
         else:
-            return "./event_story/" + "a.txt"
+            return "./event_story/" + "j.txt"
             #return "./event_story/" + f"{sub_event_list[num]}"
 
     def reaction_text(self):
