@@ -48,20 +48,20 @@ class GameScreen(Screen):
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
                     "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0, "동아리" : 0
                     ,"running" : 0, "service" : 0}
-    main = True
     on_choice_able = False
-    day = 0
     start = False
     reaction_part = False
+    event = False
+    flag = True
+    end = False
+    day = 0
     choice = 0
+    group_count = 0
     reaction_line = ""
     file_name = ""
-    flag = True
     save_file_name = ""
     saved_re_position = ""
     previous_name = "mainmenu"
-
-    event = False
 
     listeners = []  # 변수 연결용
 
@@ -219,18 +219,20 @@ class GameScreen(Screen):
 
     def reset_game(self):
         """ 게임 상태를 초기화하는 메서드 """
+        self.start = True
+        self.reaction_part = False
+        self.flag = True
+        self.is_waiting_for_click = False
+        self.event = False
+        self.end = False
+        self.choice = 0
         self.current_line = 0
         self.day = 0
-        self.start = True
-        self.main = True
-        self.reaction_part = False
-        self.choice = 0
+        self.group_count = 0
         self.reaction_line = ""
         self.file_name = "start_story.txt"
-        self.flag = True
         self.save_file_name = ""
         self.saved_re_position = ""
-        self.is_waiting_for_click = False
         self.text_area.text = ""
         self.ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
                              "속독": 0, "창의력":0, "돈": 3, "집중도": 3, "성적": 100, "멘탈": 3, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0,"동아리" : 0
@@ -239,9 +241,8 @@ class GameScreen(Screen):
         self.story_lines = self.read_story_text('start_story.txt').splitlines()
         self.start_automatic_text()
 
-        self.event = False
-
         self.listeners = [] # 변수 연결용
+
 
     def on_enter(self):
         # GameScreen에 들어왔을 때 텍스트 출력을 시작합니다.
@@ -355,11 +356,11 @@ class GameScreen(Screen):
                 self.current_line += 1
                 continue
             if self.reaction_part:  # 리액션 파트에 돌입했을 경우
+                # 내가 원하는 부분이 나올 때까지 탐색하는 부분
                 if line.startswith("#") and line == self.reaction_line:  # 내가 원하는 리액션 파트 진입
                     print("내가 원하는 리액션 파트 진입 성공")
                     self.flag = True  # 텍스트 출력 활성화
                     self.current_line += 1  # 다음 줄 탐색
-                    line = self.story_lines[self.current_line].strip()
                     continue
                 elif not self.flag:  # 내가 원하는 리액션 파트가 아닌 경우
                     self.current_line += 1  # 다음 줄 탐색
@@ -370,6 +371,7 @@ class GameScreen(Screen):
                     self.is_waiting_for_click = True  # True일 경우 텍스트 화면 클릭시 다음 줄 텍스트가 출력됨
                     return
                 elif line.startswith("-"):  # 선택지 항목이면 버튼 텍스트로 설정하고 넘김
+                    #자동으로 선택지 있는 부분을 읽음
                     self.is_waiting_for_click = False
                     self.on_choice_able = True
                     self.set_choices_from_story(self.current_line)
@@ -381,11 +383,11 @@ class GameScreen(Screen):
                         # `self.reaction_line`에서 조건문을 파싱
                         self.reaction_line = "#" + self.parse_conditional_reaction(self.reaction_line[1:])  # '#' 이후 전달
                     print("랜덤 이벤트 OR 리액션 파트 진입 성공")
-                    self.main = False
                     self.load_alternate_story(self.current_line + 1,
                                               self.reaction_line)  # 세이브 텍스트 라인 설정 후 이벤트 스토리 or 리액션 파트 진입
                     return
-                elif (line.startswith("#") and line != self.reaction_line) or line == "pass":  # 리액션 파트 종료 시
+                elif (line.startswith("#") and line != self.reaction_line) or line == "pass":
+                    # 리액션 파트에 속해 있을 때, 다른 #을 썼을 경우. 혹은 pass라는 line을 썼을 경우
                     print("리액션 파트 종료")
                     self.reaction_part = False
                     self.story_lines = self.read_story_text(self.save_file_name).splitlines()  # 이전 스토리 파일 호출
@@ -405,6 +407,7 @@ class GameScreen(Screen):
             print("리액션 파트 종료")
             self.story_lines = self.read_story_text(self.save_file_name).splitlines()  # 기존 텍스트 파일 호출
             self.current_line = self.saved_re_position + 1  # 저장된 위치로 돌아감
+            #리액션 파트는 다른 이벤트나 시작, 메인 스토리에서도 호출 될 수 있게 다른 텍스트 위치 저장 변수를 사용함.
             self.reaction_part = False
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.start:  # 종료 텍스트 파일이 start_story인 경우. 1회 실행
@@ -420,7 +423,9 @@ class GameScreen(Screen):
             self.current_line = self.saved_position + 1  # 저장된 위치로 돌아감
             Clock.schedule_once(self.start_automatic_text, 0.5)
             self.event = False
-            self.main = True
+        elif self.end:
+            self.previous_name = "mainmenu"
+            self.end_game()
         elif self.day == 2:  # 메인 스토리 루트가 3주차 진입 시
             self.day += 1
             self.story_lines = self.read_story_text('middle_story.txt').splitlines()
@@ -434,6 +439,7 @@ class GameScreen(Screen):
             self.text_area.text += f"{self.day}일차입니다.\n"
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.day == 4:
+            #기말고사 and end스토리 진입
             self.story_lines = self.read_story_text('end_story.txt').splitlines()
             self.current_line = 0
             self.day += 1
@@ -442,6 +448,7 @@ class GameScreen(Screen):
             self.day += 1
             self.load_ending_branch()
         else:
+            #마지막 날까지 왔을 시
             self.previous_name = "mainmenu"
             self.end_game()
 
@@ -795,7 +802,7 @@ class GameScreen(Screen):
         if line == "# lecture":
             # 1~3 사이의 랜덤 정수를 생성하여 파일 이름 결정
             lecture_num = random.randint(1, 3)
-            lecture_file_name = f"lecture_{lecture_num+3*self.ability_stat['dinner']}.txt"
+            lecture_file_name = f"./lecture_{lecture_num+3*self.ability_stat['dinner']}.txt"
 
             print(f"강의 파트 파일 로드: {lecture_file_name}")
 
@@ -803,8 +810,36 @@ class GameScreen(Screen):
             self.save_file_name = self.file_name  # 리액션 텍스트에 돌입하기 전 기존 텍스트 파일의 이름을 저장
             self.story_lines = self.read_story_text(lecture_file_name).splitlines()
             self.current_line = 0  # 강의 파트의 첫 번째 줄부터 시작
-            self.saved_re_position = saved_position
-            self.reaction_part = True  # 리액션 이벤트와 유사한 별도의 강의 파트
+            self.saved_position = saved_position
+            self.event = True  # 이벤트와 유사한 별도의 강의 파트
+            self.flag = False
+            Clock.schedule_once(self.start_automatic_text, 0.5)
+        elif line == "# group_task":
+            if self.group_count >= 4: #5번째 부터는 조원 찾기 이벤트를 스킵한다.
+                group_task_file_name = "./group_task/group_task_e.txt"
+            else:
+                group_task_file_name = f"./group_task/group_task_{chr(ord('a')+self.group_count)}.txt"
+            #group_task는 실행 될 때 마다 다음 파일을 읽음
+            print(f"강의 파트 파일 로드: {group_task_file_name}")
+            self.group_count += 1
+            # 강의 파트 파일 읽어들이기
+            self.save_file_name = self.file_name  # 리액션 텍스트에 돌입하기 전 기존 텍스트 파일의 이름을 저장
+            self.story_lines = self.read_story_text(group_task_file_name).splitlines()
+            self.current_line = 0  # 강의 파트의 첫 번째 줄부터 시작
+            self.saved_position = saved_position
+            self.event = True  # 이벤트와 유사한 별도의 강의 파트 => 종료 시 메인 파트로 돌아가고 리액션 기능을 사용가능함.
+            self.flag = False
+            Clock.schedule_once(self.start_automatic_text, 0.5)
+        elif line == "# group_task_result":
+            group_task_result_file_name = f"./group_task/result/{self.ability_stat['팀인원']}.txt"
+            #group_task_result는 실행 될 때 팀인원수에 따라 결과값이 다름
+            print(f"강의 파트 파일 로드: {group_task_result_file_name}")
+            # 강의 파트 파일 읽어들이기
+            self.save_file_name = self.file_name  # 리액션 텍스트에 돌입하기 전 기존 텍스트 파일의 이름을 저장
+            self.story_lines = self.read_story_text(group_task_result_file_name).splitlines()
+            self.current_line = 0  # 강의 파트의 첫 번째 줄부터 시작
+            self.saved_position = saved_position
+            self.event = True  # 이벤트와 유사한 별도의 강의 파트 => 종료 시 메인 파트로 돌아가고 리액션 기능을 사용가능함.
             self.flag = False
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif line == "#":
@@ -881,6 +916,7 @@ class GameScreen(Screen):
         print("엔딩 이벤트 실행")
         self.story_lines = self.read_story_text(self.ending_branch_story()).splitlines()
         self.current_line = 0  # 새로운 파일의 첫 번째 줄부터 시작
+        self.end = True
         Clock.schedule_once(self.start_automatic_text, 0.5)
 
     def ending_branch_story(self):
@@ -894,7 +930,11 @@ class GameScreen(Screen):
     def end_game(self):
         self.privious_name = "mainmenu"
         app = App.get_running_app()
-        if self.ability_stat["성적"] > 90:
+        if self.ability_stat['멘탈'] == 0:
+            app.game_ending('MENTAL')
+        elif self.ability_stat['CONCENTRATION'] == 0:
+            app.game_ending('')
+        elif self.ability_stat["성적"] > 90:
             app.game_ending('HIDDEN')
         elif self.ability_stat["성적"] > 80:
             app.game_ending('GOOD')
