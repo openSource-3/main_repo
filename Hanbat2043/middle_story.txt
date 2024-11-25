@@ -20,10 +20,10 @@ Q1) - 힌트조건: 지능
 파이썬 데이터 타입 중 시퀀스 데이터 타입에 해당하며
 다양한 데이터 타입들을 주어진 순서에 따라 저장할 수 있으나
 저장된 내용을 변경할 수 없는 것은?
--복소수(complex) (=Numeric Type)&성적7?지능>=1:복소수(complex)&성적7
--리스트(list) (=Sequence Type)&성적7?지능>=1:리스트(list)&성적7
--사전(dict) (=Mapping Type)&성적7?지능>=1:사전(dict)&성적7
--튜플(tuple) (=Sequence Type)?지능>=1:튜플(tuple)
+-복소수(complex) (=Numeric Type)&성적7:지능>=1?복소수(complex)&성적7
+-리스트(list) (=Sequence Type)&성적7:지능>=1?리스트(list)&성적7
+-사전(dict) (=Mapping Type)&성적7:지능>=1?사전(dict)&성적7
+-튜플(tuple) (=Sequence Type):지능>=1?튜플(tuple)
 
 # midterm_exam - 1
 
@@ -31,10 +31,10 @@ Q2) - 힌트조건: 컴퓨터기술
 인터페이스 구현 시 사용하는 기술 중
 JavaScript를 사용한 비동기 통신기술로
 클라이언트와 서버 간에 XML데이터를 주고받는 기술은?
--Procedure (DataBase)&성적7?컴퓨터기술>2:Procedure&성적7
--Trigger (DataBase)&성적7?컴퓨터기술>2:Trigger&성적7
--Greedy (Algorithm)&성적7?컴퓨터기술>2:Greedy&성적7
--AJAX (JSON)?컴퓨터기술>2:AJAX
+-Procedure (DataBase)&성적7:컴퓨터기술>2?Procedure&성적7
+-Trigger (DataBase)&성적7:컴퓨터기술>2?Trigger&성적7
+-Greedy (Algorithm)&성적7:컴퓨터기술>2?Greedy&성적7
+-AJAX (JSON):컴퓨터기술>2?AJAX
 
 # midterm_exam - 2
 
@@ -42,10 +42,10 @@ Q3) - 힌트조건: 컴퓨터기술
 객체지향 설계 원칙 중, 서브타입(상속받은 하위 클래스)은
 어디에서나 자신의 기반타입(상위클래스)으로
 교체할 수 있어야 함을 의미하는 원칙은?
--ISP (Interface Segregation Principle)&성적7?컴퓨터기술>2:ISP
--DIP (Dependency Inversion Principle)&성적7?컴퓨터기술>2:DIP
--LSP (Liskov Substitution Principle)?컴퓨터기술>2:LSP
--SRP (Single Responsibility Principle)&성적7?컴퓨터기술>2:SRP
+-ISP (Interface Segregation Principle)&성적7:컴퓨터기술>2?ISP
+-DIP (Dependency Inversion Principle)&성적7:컴퓨터기술>2?DIP
+-LSP (Liskov Substitution Principle):컴퓨터기술>2?LSP
+-SRP (Single Responsibility Principle)&성적7:컴퓨터기술>2?SRP
 
 # midterm_exam - 3
 
@@ -53,19 +53,19 @@ Q4) - 힌트조건: 지능
 SQL의 명령을 사용 용도에 따라
 DDL, DML, DCL로 구분할 경우,
 그 성격이 나머지 셋과 다른 것은?
--SELECT (조회)&성적7지능>=1:SELECT&성적7
--GRANT (권한)?지능>=1:GRANT
--INSERT (추가)&성적7지능>=1:INSERT&성적7
--UPDATE (수정)&성적7지능>=1:UPDATE&성적7
+-SELECT (조회)&성적7:지능>=1?SELECT&성적7
+-GRANT (권한):지능>=1?GRANT
+-INSERT (추가)&성적7:지능>=1?INSERT&성적7
+-UPDATE (수정)&성적7:지능>=1?UPDATE&성적7
 
 # midterm_exam - 4
 
 Q5) - 힌트조건: 지능
 OSI 7계층 모델에서 '패킷'이 사용되는 계층은 무엇인가?
--Network layer (ex- IP, ICMP)?지능>1:Network layer
--Physical layer (ex- Ethernet)&성적7?지능>1:Physical layer&성적7
--Transport layer (ex- TCP/UDP)&성적7?지능>1:Transport layer&성적7
--Session layer (ex- PPTP)&성적7?지능>1:Session layer&성적7
+-Network layer (ex- IP, ICMP):지능>=1?Network layer
+-Physical layer (ex- Ethernet)&성적7:지능>=1?Physical layer&성적7
+-Transport layer (ex- TCP/UDP)&성적7:지능>=1?Transport layer&성적7
+-Session layer (ex- PPTP)&성적7:지능>=1?Session layer&성적7
 
 # midterm_exam - 5
 
