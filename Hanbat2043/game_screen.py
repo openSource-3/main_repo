@@ -23,7 +23,6 @@ from kivy.core.audio import SoundLoader
 fontName_Bold = 'GowunBatang-Bold.ttf'
 fontName_Regular = 'GowunBatang-Regular.ttf'
 
-
 # 기본 16:9 비율 설정 (예: 720x1280)
 target_aspect_ratio = 16 / 9
 
@@ -765,6 +764,8 @@ class GameScreen(Screen):
                         self.ability_stat[stat_name] = stat_value #주어진 능력치를 추가
 
             # 선택지 버튼 텍스트 초기화 (선택 후)
+            if self.ability_stat['멘탈'] == 0 or self.ability_stat['집중도'] == 0:
+                return self.end_game()
             self.clear_choices()
 
             # 선택한 내용을 출력 후 이어서 출력
@@ -791,7 +792,7 @@ class GameScreen(Screen):
             if self.image_rect.source != "":
                 self.image_rect.source = ""
                 self.image_overlay.opacity = 0  # 이미지 레이아웃을 숨김
-
+            
     def clear_choices(self):
         self.choice1.text = ""
         self.choice2.text = ""
@@ -931,9 +932,9 @@ class GameScreen(Screen):
         self.privious_name = "mainmenu"
         app = App.get_running_app()
         if self.ability_stat['멘탈'] == 0:
-            app.game_ending('MENTAL')
-        elif self.ability_stat['CONCENTRATION'] == 0:
-            app.game_ending('')
+            app.game_ending('MENTAL_ZERO')
+        elif self.ability_stat['집중도'] == 0:
+            app.game_ending('CONCENTRATION_ZERO')
         elif self.ability_stat["성적"] > 90:
             app.game_ending('HIDDEN')
         elif self.ability_stat["성적"] > 80:

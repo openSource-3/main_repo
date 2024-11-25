@@ -47,7 +47,7 @@ class MyGameApp(App):
 
     def game_ending(self, game_result):
         ending_screen = self.root.get_screen('endingscreen')
-        ending_screen.show_ending(game_result)
+        ending_screen.show_screen(game_result)
         self.root.current = 'endingscreen'
 
     def quit_game(self):
