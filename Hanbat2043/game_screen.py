@@ -414,13 +414,6 @@ class GameScreen(Screen):
             #리액션 파트는 다른 이벤트나 시작, 메인 스토리에서도 호출 될 수 있게 다른 텍스트 위치 저장 변수를 사용함.
             self.reaction_part = False
             Clock.schedule_once(self.start_automatic_text, 0.5)
-        elif self.day == 0:  # 조별과제 10주차
-            print("조별과제 엔딩 루트 진행")
-            self.story_lines = self.read_story_text(f"./group_task/result/{self.ability_stat['팀인원']}.txt").splitlines()
-            self.current_line = 0
-            self.day += 1
-            self.text_area.text += f"{self.day}일차입니다.\n"
-            Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.end:
             self.previous_name = "mainmenu"
             self.end_game()
@@ -935,7 +928,7 @@ class GameScreen(Screen):
             return "./ending_part/hidden_end.txt"
         elif self.ability_stat["성적"] > 80:
             return "./ending_part/good_end.txt"
-        elif self.ability_stat["성적"] > 80:
+        elif self.ability_stat["성적"] > 70:
             return "./ending_part/normal_end.txt"
         else:
             return "./ending_part/bad_end.txt"
