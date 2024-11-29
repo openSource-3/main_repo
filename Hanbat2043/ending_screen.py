@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.animation import Animation
 from functools import partial
 from kivy.uix.image import Image
+from kivy.core.window import Window
 
 class EndingScreen(Screen):
     image_source = StringProperty('public/image/ending_screen/background.jpg')
@@ -18,7 +19,27 @@ class EndingScreen(Screen):
         self.current_index = 0
         self.button_added = False
         self.game_type = ''
+        
+        Window.bind(on_resize=self.on_window_resize)
+    
+    def on_window_resize(self, instance, width, height):
+        if self.ids.ending_label:
+            box_width = self.ids.ending_content_box.width
+            box_height = self.ids.ending_content_box.height
 
+            max_font_size = 28
+            new_font_size = min(box_width * 0.05, box_height * 0.2, max_font_size)
+
+            self.ids.ending_label.font_size = new_font_size
+
+            self.ids.ending_label.text_size = (self.ids.ending_content_box.width, None)
+            self.ids.ending_label.texture_update()
+
+            while self.ids.ending_label.texture_size[1] > self.ids.ending_content_box.height and new_font_size > 10:
+                new_font_size -= 1
+                self.ids.ending_label.font_size = new_font_size
+                self.ids.ending_label.texture_update()
+                
     def show_screen(self, game_result):
         if game_result in ['MENTAL_ZERO', 'CONCENTRATION_ZERO']:
             print('게임 오버 화면 전환')
@@ -64,7 +85,7 @@ class EndingScreen(Screen):
         game_over_content_box.size_hint = (1, 0.6)
         game_over_button_box.size_hint = (1, 0.4)
         
-        game_over_content_text.font_size = 25
+        # game_over_content_text.font_size = 25
         game_over_content_text.halign = 'center'
         game_over_content_text.valign = 'middle'
         game_over_content_text.line_height = 2.0
@@ -117,7 +138,7 @@ class EndingScreen(Screen):
         ending_button_box.size_hint = (0.2, 1)
         
         ending_label = self.ids.ending_label
-        ending_label.font_size = 24
+        # ending_label.font_size = 24
         ending_label.halign = 'left'
         ending_label.valign = 'bottom'
         ending_label.line_height = 1.0
