@@ -8,13 +8,16 @@ from game_screen import GameScreen
 from ending_screen import EndingScreen
 from infoPage import InfoPage, FontManager
 from progressPage import ProgressPage
+import os
 
 
 class MyGameApp(App):
     def build(self):
+        print("Current working directory:", os.getcwd())
+        print("Does 'main_menu.kv' exist?", os.path.exists("main_menu.kv"))
         sm = ScreenManager()
 
-        Builder.load_file('main_menu.kv')
+        Builder.load_file("main_menu.kv")
         Builder.load_file('ending_screen.kv')
 
         sm.add_widget(MainMenu(name='mainmenu'))  # 스크린에 추가 스크린을 상속받은 클래스만 바로 추가 가능

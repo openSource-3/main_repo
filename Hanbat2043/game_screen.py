@@ -230,7 +230,7 @@ class GameScreen(Screen):
         self.day = 0
         self.group_count = 0
         self.reaction_line = ""
-        self.file_name = "start_story.txt"
+        self.file_name = "./routine/start_story.txt"
         self.save_file_name = ""
         self.saved_re_position = ""
         self.text_area.text = ""
@@ -238,7 +238,7 @@ class GameScreen(Screen):
                              "속독": 0, "창의력":0, "속도" : 0, "돈": 3, "집중도": 3, "멘탈": 3,"성적": 100, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0,"동아리" : 0
                              ,"running" : 0, "service" : 0}
         self.update_stat_images()
-        self.story_lines = self.read_story_text('start_story.txt').splitlines()
+        self.story_lines = self.read_story_text('./routine/start_story.txt').splitlines()
         self.start_automatic_text()
 
         self.listeners = [] # 변수 연결용
@@ -418,7 +418,7 @@ class GameScreen(Screen):
             self.previous_name = "mainmenu"
             self.end_game()
         elif self.start:  # 종료 텍스트 파일이 start_story인 경우. 1회 실행
-            self.story_lines = self.read_story_text('main_story.txt').splitlines()
+            self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()
             self.current_line = 0
             self.start = False
             self.day += 1
@@ -430,17 +430,17 @@ class GameScreen(Screen):
                 self.current_line = 79
             else:
                 self.current_line = self.saved_position + 1  # 저장된 위치로 돌아감
-            self.story_lines = self.read_story_text('main_story.txt').splitlines()  # 메인 스토리 호출
+            self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()  # 메인 스토리 호출
             Clock.schedule_once(self.start_automatic_text, 0.5)
             self.event = False
         elif self.day == 4:  # 메인 스토리 루트가 5주차 진입 시 중간고사 이벤트
             self.day += 1
-            self.story_lines = self.read_story_text('middle_story.txt').splitlines()
+            self.story_lines = self.read_story_text('./routine/middle_story.txt').splitlines()
             self.current_line = 0
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.day <= 10 and self.day != 9:  # 메인 스토리 루틴 11주차까지 진행
             print("메인스토리 루트 진행")
-            self.story_lines = self.read_story_text('main_story.txt').splitlines()
+            self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()
             self.current_line = 0
             self.day += 1
             self.text_area.text += f"{self.day}일차입니다.\n"
@@ -453,7 +453,7 @@ class GameScreen(Screen):
             self.text_area.text += f"{self.day}일차입니다.\n"
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.day == 11: #12주차 기말고사 and end스토리 진입
-            self.story_lines = self.read_story_text('end_story.txt').splitlines()
+            self.story_lines = self.read_story_text('./routine/end_story.txt').splitlines()
             self.current_line = 0
             self.day += 1
             Clock.schedule_once(self.start_automatic_text, 0.5)
@@ -790,7 +790,7 @@ class GameScreen(Screen):
                     self.current_line = 69
                 else :
                     self.current_line = self.saved_position + 1  # 저장된 위치로 돌아감
-                self.story_lines = self.read_story_text('main_story.txt').splitlines()  # 메인 스토리 호출
+                self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()  # 메인 스토리 호출
                 self.on_choice_able = False
                 self.reaction_part = False
                 self.event = False  # 이벤트 스토리 판정 false

@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.animation import Animation
 from functools import partial
 from kivy.uix.image import Image
+from kivy.core.window import Window
 
 
 class EndingScreen(Screen):
@@ -19,6 +20,35 @@ class EndingScreen(Screen):
         self.current_index = 0
         self.button_added = False
         self.game_type = ''
+
+        Window.bind(on_resize=self.on_window_resize)
+
+    def on_window_resize(self, instance, width, height):
+        # 레이아웃 갱신 후 폰트 크기 계산을 지연 실행
+        Clock.schedule_once(self.update_font_size)
+
+    def update_font_size(self, dt):
+        if self.ids.ending_label:
+            box_width = self.ids.ending_content_box.width
+            box_height = self.ids.ending_content_box.height
+            print("box_width :", box_width, "box_height :", box_height)
+            if box_width >800:
+                new_font_size = 28
+            else :
+                new_font_size = 18
+
+
+            self.ids.ending_label.font_size = new_font_size
+            self.ids.ending_label.text_size = (self.ids.ending_content_box.width, None)
+            self.ids.ending_label.texture_update()
+
+            while self.ids.ending_label.texture_size[1] > self.ids.ending_content_box.height and new_font_size > 18:
+                new_font_size -= 1
+                self.ids.ending_label.font_size = new_font_size
+                self.ids.ending_label.texture_update()
+
+            print("new_font_size:", new_font_size)
+
 
     def show_screen(self, game_result):
         if game_result in ['MENTAL_ZERO', 'CONCENTRATION_ZERO']:
@@ -37,6 +67,14 @@ class EndingScreen(Screen):
         self.game_type = 'over'
         game_over_text = f"public/script/game-over/{'mental' if game_result == 'MENTAL_ZERO' else 'concentration'}-over.txt"
 
+        # 현재 창 크기를 기준으로 폰트 크기 계산
+        width, height = Window.size
+
+        if width > 800:
+            font_size = 28
+        else:
+            font_size = 18
+
         # 기존 엔딩스크린의 레이아웃을 동적으로 변경하여 게임 오버 화면 구성
         game_over_title = self.ids.ending_background
         game_over_title.size_hint = (1, 0.4)
@@ -45,10 +83,11 @@ class EndingScreen(Screen):
         game_over_title.add_widget(Label(
             text='나약한 멘탈' if game_result == 'MENTAL_ZERO' else '집중력 바닥',
             font_name='NanumGothic.ttf',
-            font_size=60,
+            font_size=font_size,  # 폰트 크기 설정
             halign='center',
             valign='middle',
         ))
+        print(f"Initial font_size for title: {font_size}")
 
         opacity_animation = Animation(opacity=1, duration=3)
         opacity_animation.start(game_over_title)
@@ -65,10 +104,15 @@ class EndingScreen(Screen):
         game_over_content_box.size_hint = (1, 0.6)
         game_over_button_box.size_hint = (1, 0.4)
 
-        game_over_content_text.font_size = 25
+        # 동적으로 폰트 크기 설정
+        game_over_content_text.font_size = font_size
         game_over_content_text.halign = 'center'
         game_over_content_text.valign = 'middle'
         game_over_content_text.line_height = 2.0
+        game_over_content_text.text_size = (game_over_content_box.width, None)  # 줄 바꿈 처리
+
+
+        print(f"Adjusted font_size for content: {font_size}")
 
         with open(game_over_text, "r", encoding='utf-8') as file:
             self.full_text_lines = file.readlines()
@@ -118,7 +162,7 @@ class EndingScreen(Screen):
         ending_button_box.size_hint = (0.2, 1)
 
         ending_label = self.ids.ending_label
-        ending_label.font_size = 24
+        # ending_label.font_size = 24
         ending_label.halign = 'left'
         ending_label.valign = 'bottom'
         ending_label.line_height = 1.0
@@ -187,3 +231,4 @@ class EndingScreen(Screen):
 
     def quit_game(self):
         self.stop()
+
