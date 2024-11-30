@@ -8,13 +8,23 @@ from kivy.animation import Animation
 from functools import partial
 from kivy.uix.image import Image
 from kivy.core.window import Window
+from kivy.app import App
+import sys
+import os
 
 
 class EndingScreen(Screen):
-    image_source = StringProperty('public/image/ending_screen/background.jpg')
+    image_source = StringProperty('')
+    dynamic_font_path = StringProperty('')  # 동적 폰트 경로
+
+    def on_pre_enter(self, *args):
+        # 동적으로 리소스 경로를 설정
+        self.image_source = self.get_resource_path('public/image/ending_screen/background.jpg')
+        super().on_pre_enter(*args)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.dynamic_font_path = self.get_resource_path('NanumGothic.ttf')  # 폰트 경로 설정
         self.full_text_lines = []
         self.displayed_text = ""
         self.current_index = 0
@@ -61,11 +71,15 @@ class EndingScreen(Screen):
             self.ending_screen(game_result)
 
     def game_over_screen(self, game_result):
+        if hasattr(sys, '_MEIPASS'):
+            fontName_Nan = os.path.join(sys._MEIPASS, 'NanumGothic.ttf')
+        else:
+            fontName_Nan = os.path.join(os.path.dirname(__file__), 'NanumGothic.ttf')
         self.displayed_text = ""
         self.current_index = 0
         self.button_added = False
         self.game_type = 'over'
-        game_over_text = f"public/script/game-over/{'mental' if game_result == 'MENTAL_ZERO' else 'concentration'}-over.txt"
+        game_over_text = self.get_resource_path(f"public/script/game-over/{'mental' if game_result == 'MENTAL_ZERO' else 'concentration'}-over.txt")
 
         # 현재 창 크기를 기준으로 폰트 크기 계산
         width, height = Window.size
@@ -82,7 +96,7 @@ class EndingScreen(Screen):
         game_over_title.clear_widgets()
         game_over_title.add_widget(Label(
             text='나약한 멘탈' if game_result == 'MENTAL_ZERO' else '집중력 바닥',
-            font_name='NanumGothic.ttf',
+            font_name=fontName_Nan,
             font_size=font_size,  # 폰트 크기 설정
             halign='center',
             valign='middle',
@@ -125,15 +139,15 @@ class EndingScreen(Screen):
         self.button_added = False
         self.game_type = 'ending'
 
-        ending_text_file = f'public/script/{game_result.lower()}-ending.txt'
+        ending_text_file = self.get_resource_path(f'public/script/{game_result.lower()}-ending.txt')
         if game_result == 'BAD':
-            self.image_source = 'public/image/ending_screen/bad-ending.jpg'
+            self.image_source = self.get_resource_path('public/image/ending_screen/bad-ending.jpg')
         elif game_result == 'NORMAL':
-            self.image_source = 'public/image/ending_screen/normal-ending.jpg'
+            self.image_source = self.get_resource_path('public/image/ending_screen/normal-ending.jpg')
         elif game_result == 'GOOD':
-            self.image_source = 'public/image/ending_screen/good-ending.jpg'
+            self.image_source = self.get_resource_path('public/image/ending_screen/good-ending.jpg')
         elif game_result == 'HIDDEN':
-            self.image_source = 'public/image/ending_screen/hidden-ending.jpeg'
+            self.image_source = self.get_resource_path('public/image/ending_screen/hidden-ending.jpeg')
 
         ending_background = self.ids.ending_background
         ending_background.clear_widgets()
@@ -185,6 +199,10 @@ class EndingScreen(Screen):
                 self.button_added = True
 
     def add_go_to_main_button(self):
+        if hasattr(sys, '_MEIPASS'):
+            fontName_Nan = os.path.join(sys._MEIPASS, 'NanumGothic.ttf')
+        else:
+            fontName_Nan = os.path.join(os.path.dirname(__file__), 'NanumGothic.ttf')
         self.ids.ending_button_box.clear_widgets()
         print(f'=========================={self.game_type}')
         if self.game_type == 'ending':
@@ -192,14 +210,14 @@ class EndingScreen(Screen):
                 on_press=self.go_back_to_main_menu,
                 size_hint=(None, None),
                 size=(100, 100),
-                background_normal='public/image/ending_screen/graduation_cap.png',
-                background_down='public/image/ending_screen/graduation_cap.png',
+                background_normal=self.get_resource_path('public/image/ending_screen/graduation_cap.png'),
+                background_down=self.get_resource_path('public/image/ending_screen/graduation_cap.png'),
                 pos_hint={'center_x': 0.5, 'center_y': 0.5}
             ))
         elif self.game_type == 'over':
             go_to_main_button = Button(
                 text='> 다시 시작하기',
-                font_name='NanumGothic.ttf',
+                font_name=fontName_Nan,
                 font_size=30,
                 background_normal='',
                 background_color=(0, 0, 0, 0),
@@ -210,14 +228,14 @@ class EndingScreen(Screen):
             )
             exit_button = Button(
                 text='> 졸업 포기하기',
-                font_name='NanumGothic.ttf',
+                font_name=fontName_Nan,
                 font_size=30,
                 background_normal='',
                 background_color=(0, 0, 0, 0),
                 color=(1, 1, 1, 1),
                 size_hint=(1, None),
                 height=50,
-                on_press=self.quit_game
+                on_press=lambda _: self.quit_game()
             )
             self.ids.ending_button_box.add_widget(go_to_main_button)
             self.ids.ending_button_box.add_widget(exit_button)
@@ -229,6 +247,13 @@ class EndingScreen(Screen):
         self.game_type = ''
         self.manager.current = 'mainmenu'
 
-    def quit_game(self):
-        self.stop()
+    def quit_game(self, instance=None):
+        App.get_running_app().stop()  # 현재 실행 중인 애플리케이션 종료
+
+    def get_resource_path(self, filename):
+        """리소스 경로를 반환하는 함수"""
+        if hasattr(sys, '_MEIPASS'):
+            # PyInstaller 환경에서 리소스 경로 반환
+            return os.path.join(sys._MEIPASS, filename)
+        return os.path.abspath(filename)  # 개발 환경에서 절대 경로 반환
 

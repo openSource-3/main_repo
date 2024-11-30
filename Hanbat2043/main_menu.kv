@@ -22,49 +22,49 @@
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 20
                 Label:
                     text: "20##### 장예나"
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 18
                 Label:
-                    text: "20##### 유용상"
+                    text: "20211884 유용상"
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 18
                 Label:
                     text: "20191969 김우곤"
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 18
                 Label:
                     text: "사용툴 : Python Kivy"
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 16
                 Label:
                     text: "개발기간: 24.10.03 ~"
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 16
                 Label:
                     text: "v1.0.0"
                     halign: 'left' 
                     valign: 'middle'
                     text_size: self.width, None
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 16
 
         FloatLayout:
@@ -73,7 +73,7 @@
             padding: 10
 
             Image:
-                source: 'public/image/main_screen/background.png'
+                source: root.background_image_path  # 동적 경로 바인딩
                 size_hint_y: 1
                 allow_stretch: True
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
@@ -86,7 +86,7 @@
 
                 Button:
                     text: '> 게임 시작'
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 35
                     size_hint: None, None
                     size: self.texture_size
@@ -100,7 +100,7 @@
 
                 Button:
                     text: '> 게임 종료'
-                    font_name: 'NanumGothic.ttf'
+                    font_name: root.dynamic_font_path
                     font_size: 35
                     size_hint: None, None
                     size: self.texture_size

@@ -19,9 +19,9 @@ from progressPage import ProgressPage
 import re
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
+import sys
+import os
 
-fontName_Bold = 'GowunBatang-Bold.ttf'
-fontName_Regular = 'GowunBatang-Regular.ttf'
 
 
 # 기본 16:9 비율 설정 (예: 720x1280)
@@ -45,6 +45,16 @@ class ClickableLabel(ButtonBehavior, Label):
 
 
 class GameScreen(Screen):
+    if hasattr(sys, '_MEIPASS'):
+        fontName_Bold = os.path.join(sys._MEIPASS, 'GowunBatang-Bold.ttf')
+    else:
+        fontName_Bold = os.path.join(os.path.dirname(__file__), 'GowunBatang-Bold.ttf')
+    if hasattr(sys, '_MEIPASS'):
+        fontName_Regular = os.path.join(sys._MEIPASS, 'GowunBatang-Regular.ttf')
+    else:
+        fontName_Regular = os.path.join(os.path.dirname(__file__), 'GowunBatang-Regular.ttf')
+
+
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
                     "속독": 0, "창의력":0, "속도" : 0, "돈": 3, "집중도": 3, "멘탈": 3,"성적": 100,  "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0, "동아리" : 0
                     ,"running" : 0, "service" : 0}
@@ -89,6 +99,12 @@ class GameScreen(Screen):
         for listener in cls.listeners:
             listener(cls.ability_stat)
 
+    def get_resource_path(self, filename):
+        """리소스 경로를 반환하는 함수"""
+        if hasattr(sys, '_MEIPASS'):
+            return os.path.join(sys._MEIPASS, filename)
+        return filename
+
     def build(self):
         print("빌드 실행")
         # 전체 레이아웃 (수직)
@@ -102,7 +118,7 @@ class GameScreen(Screen):
             text="",
             font_size=24,
             size_hint=(7 / 8, 1),
-            font_name=fontName_Regular,
+            font_name=self.fontName_Regular,
             text_size=(720 * 7 / 8, None),
             halign='left',
             valign='top',
@@ -121,8 +137,8 @@ class GameScreen(Screen):
         self.right_layout = BoxLayout(orientation='vertical', size_hint=(1 / 8, 1))
 
         # 능력창 및 진척도창 버튼 추가
-        self.ability_button = Button(text="능력창", font_name=fontName_Regular, size_hint=(1, 0.15))
-        self.progress_button = Button(text="진척도", font_name=fontName_Regular, size_hint=(1, 0.15))
+        self.ability_button = Button(text="능력창", font_name=self.fontName_Regular, size_hint=(1, 0.15))
+        self.progress_button = Button(text="진척도", font_name=self.fontName_Regular, size_hint=(1, 0.15))
 
         self.ability_button.bind(on_press=self.open_info_page)
         self.progress_button.bind(on_press=self.open_progress_page)
@@ -141,13 +157,13 @@ class GameScreen(Screen):
         self.choice_layout = BoxLayout(orientation='vertical', size_hint=(1, 1 / 4))
 
         # 선택지 버튼들
-        self.choice1 = Button(font_name=fontName_Bold, background_normal='', background_down='',
+        self.choice1 = Button(font_name=self.fontName_Bold, background_normal='', background_down='',
                               background_color=(0, 0, 0, 1))
-        self.choice2 = Button(font_name=fontName_Bold, background_normal='', background_down='',
+        self.choice2 = Button(font_name=self.fontName_Bold, background_normal='', background_down='',
                               background_color=(0, 0, 0, 1))
-        self.choice3 = Button(font_name=fontName_Bold, background_normal='', background_down='',
+        self.choice3 = Button(font_name=self.fontName_Bold, background_normal='', background_down='',
                               background_color=(0, 0, 0, 1))
-        self.choice4 = Button(font_name=fontName_Bold, background_normal='', background_down='',
+        self.choice4 = Button(font_name=self.fontName_Bold, background_normal='', background_down='',
                               background_color=(0, 0, 0, 1))
 
         # 각 버튼에 이벤트 핸들러 연결
@@ -230,7 +246,7 @@ class GameScreen(Screen):
         self.day = 0
         self.group_count = 0
         self.reaction_line = ""
-        self.file_name = "./routine/start_story.txt"
+        self.file_name = self.get_resource_path(self.get_resource_path("./routine/start_story.txt"))
         self.save_file_name = ""
         self.saved_re_position = ""
         self.text_area.text = ""
@@ -238,7 +254,7 @@ class GameScreen(Screen):
                              "속독": 0, "창의력":0, "속도" : 0, "돈": 3, "집중도": 3, "멘탈": 3,"성적": 100, "sw" : 0,  "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0,"동아리" : 0
                              ,"running" : 0, "service" : 0}
         self.update_stat_images()
-        self.story_lines = self.read_story_text('./routine/start_story.txt').splitlines()
+        self.story_lines = self.read_story_text(self.get_resource_path('./routine/start_story.txt')).splitlines()
         self.start_automatic_text()
 
         self.listeners = [] # 변수 연결용
@@ -298,21 +314,21 @@ class GameScreen(Screen):
         money_stat = self.ability_stat.get('돈', 0)
         money_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
         for _ in range(money_stat):
-            money_layout.add_widget(Image(source='./public/image/icon/money.png'))  # 돈 이미지 경로 설정
+            money_layout.add_widget(Image(source=self.get_resource_path('./public/image/icon/money.png')))  # 돈 이미지 경로 설정
         self.stat_image_layout.add_widget(money_layout)
 
         # '집중도'에 해당하는 세모 이미지
         focus_stat = self.ability_stat.get('집중도', 0)
         focus_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
         for _ in range(focus_stat):
-            focus_layout.add_widget(Image(source='./public/image/icon/pen.png'))  # 연필 이미지 경로 설정
+            focus_layout.add_widget(Image(source=self.get_resource_path('./public/image/icon/pen.png')))  # 연필 이미지 경로 설정
         self.stat_image_layout.add_widget(focus_layout)
 
         # '멘탈'에 해당하는 하트 이미지
         mental_stat = self.ability_stat.get('멘탈', 0)
         mental_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
         for _ in range(mental_stat):
-            mental_layout.add_widget(Image(source='./public/image/icon/heart.png'))  # 하트 이미지 경로 설정
+            mental_layout.add_widget(Image(source=self.get_resource_path('./public/image/icon/heart.png')))  # 하트 이미지 경로 설정
         self.stat_image_layout.add_widget(mental_layout)
 
     # 텍스트 파일에서 내용을 읽어오는 함수
@@ -350,7 +366,7 @@ class GameScreen(Screen):
             if self.flag:
                 print(self.file_name, self.current_line, line)
                 if line.startswith("I"):  # 이미지 경로 처리
-                    image_path = line[1:].strip()  # 'I' 이후 경로 추출
+                    image_path = self.get_resource_path(line[1:].strip()) # 'I' 이후 경로 추출
                     print(f"이미지 경로 감지: {image_path}")
                     self.update_image_source(image_path)  # 이미지 업데이트
                     self.current_line += 1  # 다음 줄로 이동
@@ -359,7 +375,7 @@ class GameScreen(Screen):
                     Clock.schedule_once(self.start_automatic_text, 0.5)
                     return
                 elif line.startswith("A"):
-                    audio_path = line[1:].strip()
+                    audio_path =self.get_resource_path(line[1:].strip())
 
                     if audio_path:  # "A" 다음 경로가 있는 경우
                         print(f"사운드 경로 감지: {audio_path}")
@@ -418,7 +434,7 @@ class GameScreen(Screen):
             self.previous_name = "mainmenu"
             self.end_game()
         elif self.start:  # 종료 텍스트 파일이 start_story인 경우. 1회 실행
-            self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()
+            self.story_lines = self.read_story_text(self.get_resource_path(self.get_resource_path('./routine/main_story.txt'))).splitlines()
             self.current_line = 0
             self.start = False
             self.day += 1
@@ -426,34 +442,34 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.event:  # 이벤트 스토리에서 종료 됐을 시
             print("이벤트 스토리 종료 메인 스토리 위치로 돌아갑니다.")
-            if self.file_name == "./event_story/i.txt":
+            if self.file_name == self.get_resource_path("./event_story/i.txt"):
                 self.current_line = 79
             else:
                 self.current_line = self.saved_position + 1  # 저장된 위치로 돌아감
-            self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()  # 메인 스토리 호출
+            self.story_lines = self.read_story_text(self.get_resource_path('./routine/main_story.txt')).splitlines()  # 메인 스토리 호출
             Clock.schedule_once(self.start_automatic_text, 0.5)
             self.event = False
         elif self.day == 4:  # 메인 스토리 루트가 5주차 진입 시 중간고사 이벤트
             self.day += 1
-            self.story_lines = self.read_story_text('./routine/middle_story.txt').splitlines()
+            self.story_lines = self.read_story_text(self.get_resource_path('./routine/middle_story.txt')).splitlines()
             self.current_line = 0
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.day <= 10 and self.day != 9:  # 메인 스토리 루틴 11주차까지 진행
             print("메인스토리 루트 진행")
-            self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()
+            self.story_lines = self.read_story_text(self.get_resource_path('./routine/main_story.txt')).splitlines()
             self.current_line = 0
             self.day += 1
             self.text_area.text += f"{self.day}일차입니다.\n"
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.day == 9:  # 조별과제 10주차
             print("조별과제 엔딩 루트 진행")
-            self.story_lines = self.read_story_text(f"./group_task/result/{self.ability_stat['팀인원']}").splitlines()
+            self.story_lines = self.read_story_text(self.get_resource_path(f"./group_task/result/{self.ability_stat['팀인원']}")).splitlines()
             self.current_line = 0
             self.day += 1
             self.text_area.text += f"{self.day}일차입니다.\n"
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif self.day == 11: #12주차 기말고사 and end스토리 진입
-            self.story_lines = self.read_story_text('./routine/end_story.txt').splitlines()
+            self.story_lines = self.read_story_text(self.get_resource_path('./routine/end_story.txt')).splitlines()
             self.current_line = 0
             self.day += 1
             Clock.schedule_once(self.start_automatic_text, 0.5)
@@ -786,11 +802,11 @@ class GameScreen(Screen):
             if has_underscore:
                 # 선택한 텍스트가 `_`로 끝난 경우
                 print("강제종료 시점", self.file_name, self.current_line)
-                if self.file_name == "./reaction/reaction_a.txt" and self.current_line == 303:
+                if self.file_name == self.get_resource_path("./reaction/reaction_a.txt") and self.current_line == 303:
                     self.current_line = 69
                 else :
                     self.current_line = self.saved_position + 1  # 저장된 위치로 돌아감
-                self.story_lines = self.read_story_text('./routine/main_story.txt').splitlines()  # 메인 스토리 호출
+                self.story_lines = self.read_story_text(self.get_resource_path('./routine/main_story.txt')).splitlines()  # 메인 스토리 호출
                 self.on_choice_able = False
                 self.reaction_part = False
                 self.event = False  # 이벤트 스토리 판정 false
@@ -816,7 +832,7 @@ class GameScreen(Screen):
         if line == "# lecture":
             # 1~3 사이의 랜덤 정수를 생성하여 파일 이름 결정
             lecture_num = random.randint(1, 3)
-            lecture_file_name = f"./reaction/lecture.txt"
+            lecture_file_name = self.get_resource_path(f"./reaction/lecture.txt")
 
             print(f"강의 파트 파일 로드: {lecture_file_name}")
 
@@ -830,9 +846,9 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
         elif line == "# group_task":
             if self.group_count >= 4: #5번째 부터는 조원 찾기 이벤트를 스킵한다.
-                group_task_file_name = "./group_task/group_task_e.txt"
+                group_task_file_name = self.get_resource_path("./group_task/group_task_e.txt")
             else:
-                group_task_file_name = f"./group_task/group_task_{chr(ord('a')+self.group_count)}.txt"
+                group_task_file_name = self.get_resource_path(f"./group_task/group_task_{chr(ord('a')+self.group_count)}.txt")
             #group_task는 실행 될 때 마다 다음 파일을 읽음
             print(f"강의 파트 파일 로드: {group_task_file_name}")
             self.group_count += 1
@@ -846,13 +862,13 @@ class GameScreen(Screen):
         elif line == "#":
             # 랜덤 이벤트용 파일을 불러오기
             self.event = True
-            file_name = self.sub_event_story()
+            file_name = self.get_resource_path(self.sub_event_story())
             self.story_lines = self.read_story_text(file_name).splitlines()
-            if file_name == "./event_story/i.txt" and self.ability_stat["저녁약속"] == 1 and self.ability_stat["dinner"] == 1:#저녁 약속이 존재하고 지금이 저녁인 경우
+            if file_name == self.get_resource_path("./event_story/i.txt") and self.ability_stat["저녁약속"] == 1 and self.ability_stat["dinner"] == 1:#저녁 약속이 존재하고 지금이 저녁인 경우
                 self.current_line = 15
-            elif file_name == "./event_story/j-1.txt":
+            elif file_name == self.get_resource_path("./event_story/j-1.txt"):
                 self.current_line = 60 * self.ability_stat["running"]
-            elif file_name == "./event_story/j-2.txt":
+            elif file_name == self.get_resource_path("./event_story/j-2.txt"):
                 self.current_line = 60 * self.ability_stat["service"]
             else:
                 self.current_line = 0
@@ -861,7 +877,7 @@ class GameScreen(Screen):
         else:
             self.save_file_name = self.file_name  # 리액션 텍스트에 돌입하기 전 기존 텍스트 파일의 이름을 저장
             print("저장된 파일 이름", self.save_file_name)
-            self.story_lines = self.read_story_text(self.reaction_text()).splitlines()
+            self.story_lines = self.read_story_text(self.get_resource_path(self.reaction_text())).splitlines()
             self.current_line = 0  # 새로운 파일의 첫 번째 줄부터 시작
             # 스토리가 끝났을 때 이전 파일로 돌아감
             self.saved_re_position = saved_position
@@ -914,7 +930,7 @@ class GameScreen(Screen):
 
     def load_ending_branch(self):
         print("엔딩 이벤트 실행")
-        self.story_lines = self.read_story_text(self.ending_branch_story()).splitlines()
+        self.story_lines = self.read_story_text(self.get_resource_path(self.ending_branch_story())).splitlines()
         self.current_line = 0  # 새로운 파일의 첫 번째 줄부터 시작
         self.end = True
         Clock.schedule_once(self.start_automatic_text, 0.5)

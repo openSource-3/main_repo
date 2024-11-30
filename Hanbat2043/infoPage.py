@@ -1,4 +1,5 @@
 import os
+import sys
 from kivy.core.text import LabelBase
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -10,8 +11,13 @@ class FontManager:
     @staticmethod
     def register_fonts():
         """H2GPRM 폰트를 등록합니다."""
-        font_path = os.path.join(os.path.dirname(__file__), 'H2GPRM.ttf')
+        if hasattr(sys, '_MEIPASS'):
+            font_path = os.path.join(sys._MEIPASS, 'H2GPRM.ttf')
+        else:
+            font_path = os.path.join(os.path.dirname(__file__), 'H2GPRM.ttf')
         LabelBase.register(name='H2GPRM', fn_regular=font_path)
+
+
 
 class InfoPage(FloatLayout):
     """사용자 정보와 능력치를 출력하는 UI 페이지를 구성하는 클래스."""

@@ -1,4 +1,5 @@
 import os
+import sys
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
@@ -13,10 +14,16 @@ class FontManager:
     @staticmethod
     def register_fonts():
         # 폰트 경로 등록
-        font_path_h2gprm = os.path.join(os.path.dirname(__file__), 'H2GPRM.ttf')
+        if hasattr(sys, '_MEIPASS'):
+            font_path_h2gprm = os.path.join(sys._MEIPASS, 'H2GPRM.ttf')
+        else:
+            font_path_h2gprm = os.path.join(os.path.dirname(__file__), 'H2GPRM.ttf')
         LabelBase.register(name='H2GPRM', fn_regular=font_path_h2gprm)
 
-        font_path_malgun = os.path.join(os.path.dirname(__file__), 'malgunbd.ttf')
+        if hasattr(sys, '_MEIPASS'):
+            font_path_malgun = os.path.join(sys._MEIPASS, 'malgunbd.ttf')
+        else:
+            font_path_malgun = os.path.join(os.path.dirname(__file__), 'malgunbd.ttf')
         LabelBase.register(name='Malgun Gothic', fn_regular=font_path_malgun)
 
 class ProgressPageCompo(BoxLayout):
@@ -33,7 +40,10 @@ class ProgressPageCompo(BoxLayout):
         # UI 요소 초기화
         self.days_left_labels = []
         self.back_button = None
-        self.title_image_path = os.path.join(os.path.dirname(__file__), 'progress_icon.png')
+        if hasattr(sys, '_MEIPASS'):
+            self.title_image_path = os.path.join(sys._MEIPASS, 'progress_icon.png')
+        else:
+            self.title_image_path = os.path.join(os.path.dirname(__file__), 'progress_icon.png')
 
         # GameScreen 이벤트 리스너 등록
         from game_screen import GameScreen

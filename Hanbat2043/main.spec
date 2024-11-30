@@ -21,10 +21,9 @@ a = Analysis(['main.py'],
                             ('H2GPRM.TTF', '.'),  # ttf 파일 추가
                             ('progress_icon.png', '.'),  # 이미지 파일 추가
                             ('main_menu.kv', '.'),  # kv 파일 추가
-                            ('game_screen.kv', '.'),  # kv 파일 추가
                             ('ending_screen.kv', '.'),  # kv 파일 추가
                             ('malgunbd.ttf', '.'),
-                            ('NanumGothic.ttf', '.')],
+                            ('C:/SWproject/Hanbat2043/NanumGothic.ttf', '.')],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},

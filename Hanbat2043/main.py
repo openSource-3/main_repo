@@ -9,16 +9,18 @@ from ending_screen import EndingScreen
 from infoPage import InfoPage, FontManager
 from progressPage import ProgressPage
 import os
+import sys
 
 
 class MyGameApp(App):
     def build(self):
+        self.title = "Hanbat2043__v.1.0.0"
         print("Current working directory:", os.getcwd())
         print("Does 'main_menu.kv' exist?", os.path.exists("main_menu.kv"))
         sm = ScreenManager()
 
-        Builder.load_file("main_menu.kv")
-        Builder.load_file('ending_screen.kv')
+        Builder.load_file(self.get_resource_path('main_menu.kv'))
+        Builder.load_file(self.get_resource_path('ending_screen.kv'))
 
         sm.add_widget(MainMenu(name='mainmenu'))  # 스크린에 추가 스크린을 상속받은 클래스만 바로 추가 가능
 
@@ -55,6 +57,12 @@ class MyGameApp(App):
 
     def quit_game(self):
         self.stop()
+
+    def get_resource_path(self, filename):
+        """리소스 경로를 반환하는 함수"""
+        if hasattr(sys, '_MEIPASS'):
+            return os.path.join(sys._MEIPASS, filename)
+        return filename
 
 
 if __name__ == '__main__':
