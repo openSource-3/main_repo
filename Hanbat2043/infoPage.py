@@ -26,7 +26,7 @@ class InfoPage(FloatLayout):
         self.screen_manager = screen_manager
         self.userName = "김한밭"
         self.userState = "한밭대학교 5학년 2학기 재학 중이다."
-        self.userTrait = "처음 선택한 특성에 관한 문구"
+        self.userTrait = "엔딩까지 화이팅!"
 
         from game_screen import GameScreen
 
@@ -108,13 +108,13 @@ class InfoPage(FloatLayout):
     def get_ability_description(self, name):
         """각 능력치의 설명을 반환합니다."""
         descriptions = {
-            "컴퓨터기술": "컴퓨터를 다루는 능력",
-            "체력": "육체적인 힘과 건강",
-            "운": "행운과 기회",
-            "지능": "논리적 사고 및 문제 해결 능력",
-            "타자": "빠르게 정확히 타자치는 능력",
-            "속독": "문서를 빠르게 읽는 능력",
-            "창의력": "창의적 사고와 발상"
+            "컴퓨터기술": "컴퓨터에 대한 기본적인 이해",
+            "체력": "깔끔한 코딩도 좋지만 건강도 꼭 챙기기",
+            "운": "어떨 때는 순전히 운이 모든 걸 결정한다",
+            "지능": "문제 접근에 필수적인 문제 해결 능력",
+            "타자": "무시할 수 없는 요소",
+            "속독": "문서를 빠르게 읽고 이해하기",
+            "창의력": "아이디어를 위한 말랑말랑 두뇌"
         }
         return descriptions.get(name, "설명이 없습니다.")
 
