@@ -28,6 +28,7 @@ import os
 target_aspect_ratio = 16 / 9
 
 class ColoredBox(Widget):
+    # 1. 특별 메서드: __init__ 및 __class__method는 특별 메서드로, 객체 초기화 및 클래스 수준 작업 수행
     def __init__(self, color=(1, 0, 0, 1), **kwargs):  # 기본값은 빨간색
         super(ColoredBox, self).__init__(**kwargs)
         with self.canvas:
@@ -54,7 +55,7 @@ class GameScreen(Screen):
     else:
         fontName_Regular = os.path.join(os.path.dirname(__file__), 'GowunBatang-Regular.ttf')
 
-
+    # 3. 데이터 구조체 - 딕셔너리와 집합: 딕셔너리 `ability_stat`는 게임 속 능력치 데이터를 저장하고 관리하는 데 사용
     ability_stat = {"컴퓨터기술": 0, "체력": 0, "운": 1, "허기": 0, "지능": 0, "타자": 0,
                     "속독": 0, "창의력":0, "속도" : 0, "돈": 3, "집중도": 3, "멘탈": 3,"성적": 100,  "sw" : 0, "zoom" : 0, "day" : 0, "팀인원":0, "dinner" : 0, "저녁약속" : 0, "동아리" : 0
                     ,"running" : 0, "service" : 0}
@@ -85,6 +86,7 @@ class GameScreen(Screen):
         """변경 사항을 알리기 위한 리스너를 추가합니다."""
         cls.listeners.append(listener)
 
+    # 9. 객체 참조, 가변성, 재활용: `self.ability_stat`는 게임 내에서 상태 변경을 나타내는 가변 데이터 구조로 사용
     @classmethod
     def update_stat(cls, stat_name='day', value='0'):
         """능력치를 업데이트하고 리스너에게 변경 사항을 알립니다."""
@@ -116,7 +118,7 @@ class GameScreen(Screen):
         # 텍스트 영역 (가로로 7/8)
         self.text_area = ClickableLabel(
             text="",
-            font_size=24,
+            font_size=18,
             size_hint=(7 / 8, 1),
             font_name=self.fontName_Regular,
             text_size=(720 * 7 / 8, None),
@@ -259,6 +261,7 @@ class GameScreen(Screen):
 
         self.listeners = [] # 변수 연결용
 
+    # 6. First-class Functions (일급 함수): 함수가 인자로 전달되거나 반환값으로 사용되는 사례로, 이벤트 시스템에서 콜백 함수를 사용
 
     def on_enter(self):
         # GameScreen에 들어왔을 때 텍스트 출력을 시작합니다.
@@ -299,12 +302,13 @@ class GameScreen(Screen):
             self.choice3.font_size = 28
             self.choice4.font_size = 28
         else :
-            self.text_area.font_size = 24
+            self.text_area.font_size = 18
             self.choice1.font_size = 22
             self.choice2.font_size = 22
             self.choice3.font_size = 22
             self.choice4.font_size = 22
 
+    # 7. 리팩토링: 클래스 구조로 캡슐화하고 복잡한 기능을 여러 메서드로 분리
     def update_stat_images(self):
         """ 스탯 값에 따라 이미지를 갱신하는 함수 """
         # 기존 이미지 제거
@@ -332,6 +336,8 @@ class GameScreen(Screen):
         self.stat_image_layout.add_widget(mental_layout)
 
     # 텍스트 파일에서 내용을 읽어오는 함수
+    # 4. 데이터 구조체 - 텍스트와 바이트: 텍스트 데이터는 `read_story_text` 메서드에서 파일로부터 읽어오는 방식으로 사용
+    # 5. 텍스트 파일: 텍스트 파일에서 스토리를 읽어오고 `read_story_text`에서 반환하는 방식으로 사용
     def read_story_text(self, file_path):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -386,6 +392,7 @@ class GameScreen(Screen):
 
                     self.current_line += 1
                     continue
+                # 4. 데이터 구조체 - 텍스트와 바이트: 줄 단위로 텍스트 데이터를 처리하고, 조건, 선택지, 빈 줄 등을 다룰 수 있는 구조를 구현
                 elif line == "":  # 빈 줄일 경우 클릭 대기
                     print("빈줄 실행")
                     self.is_waiting_for_click = True  # True일 경우 텍스트 화면 클릭시 다음 줄 텍스트가 출력됨
@@ -396,6 +403,7 @@ class GameScreen(Screen):
                     self.on_choice_able = True
                     self.set_choices_from_story(self.current_line)
                     return
+                # 6. First-class Functions (일급 함수): 조건문을 처리하는 함수가 인자로 전달되어 특정 부분의 동작을 결정
                 elif line.startswith("#") and not self.reaction_part:  # 첫 번째 글자가 #일 때, 리액션 파트가 아닐 경우
                     self.reaction_line = line
                     while ":" in self.reaction_line and "?" in self.reaction_line:  # 조건문이 포함된 경우 파싱
@@ -433,6 +441,7 @@ class GameScreen(Screen):
         elif self.end:
             self.previous_name = "mainmenu"
             self.end_game()
+        # 7. 리팩토링: 반복적인 작업을 메서드로 분리하여 유지보수를 용이하게
         elif self.start:  # 종료 텍스트 파일이 start_story인 경우. 1회 실행
             self.story_lines = self.read_story_text(self.get_resource_path(self.get_resource_path('./routine/main_story.txt'))).splitlines()
             self.current_line = 0
@@ -449,6 +458,7 @@ class GameScreen(Screen):
             self.story_lines = self.read_story_text(self.get_resource_path('./routine/main_story.txt')).splitlines()  # 메인 스토리 호출
             Clock.schedule_once(self.start_automatic_text, 0.5)
             self.event = False
+        # 5. 텍스트 파일: 특정 조건에 따라 텍스트 파일을 읽고 처리하여 게임 흐름을 제어
         elif self.day == 4:  # 메인 스토리 루트가 5주차 진입 시 중간고사 이벤트
             self.day += 1
             self.story_lines = self.read_story_text(self.get_resource_path('./routine/middle_story.txt')).splitlines()
@@ -476,6 +486,7 @@ class GameScreen(Screen):
         elif self.day == 12: #13주차
             self.load_ending_branch()
 
+    # 1. 특별 메서드: 오버레이 이미지 업데이트를 위한 메서드
     def update_image_source(self, image_path):
         """이미지 오버레이에 새로운 이미지를 설정."""
         if self.image_rect:
@@ -647,6 +658,7 @@ class GameScreen(Screen):
             # 조건이 거짓이면 else_part 반환
             return else_part
 
+    # 6. First-class Functions (일급 함수): 콜백 함수와 조건문 평가를 통한 다이내믹한 게임 흐름 제어
     # 텍스트 파일의 조건문에 대한 판별 함수
     def evaluate_condition(self, current_value, target_value, operator):
         if operator == ">=":
@@ -704,6 +716,7 @@ class GameScreen(Screen):
 
         return (stat_name, stat_value, operation)
 
+    # 9. 객체 참조, 가변성, 재활용: 가변 데이터를 조건에 따라 변경하여 게임 상태를 관리
     def parse_luck_adjustment(self, choice_text):
         # *숫자* 형식을 찾고 파싱
         if '*' in choice_text:
@@ -737,11 +750,11 @@ class GameScreen(Screen):
             self.current_line += 1
             self.start_automatic_text()
 
-    # 선택지 버튼을 눌렀을 때의 동작 정의
+    # 1. 특별 메서드: 선택지 버튼을 클릭했을 때 호출되는 메서드
     def on_choice(self, instance):
         stat_text = ""
         if self.on_choice_able and instance.text != "":
-            # 선택된 버튼에 맞는 인덱스를 찾고 해당 조정값을 가져옴
+            # 6. First-class Functions (일급 함수):  선택된 버튼의 인스턴스를 기반으로 관련 데이터를 가져와 처리
             self.select_text = instance.text
             if instance == self.choice1:
                 adjustments = self.adjustments[0]  # (stat_name, stat_value, operation) 각 형태를 가진 배열
@@ -763,9 +776,10 @@ class GameScreen(Screen):
                 adjustments = []  # 빈 리스트로 초기화
                 has_underscore = False  # 기본값 False
 
-            # None일 경우 빈 리스트로 처리
+            # 3. 데이터 구조체 - 딕셔너리와 집합: 선택지를 통해 능력치(딕셔너리) 값을 수정
             if adjustments is None:
                 adjustments = []
+
             # 여러 능력치 조정 처리
             for adjustment in adjustments:
                 if adjustment:
@@ -828,6 +842,7 @@ class GameScreen(Screen):
         self.choice3.text = ""
         self.choice4.text = ""
 
+    # 5. 텍스트 파일: 특정 조건에 따라 다른 스토리 파일을 불러오는 메서드
     def load_alternate_story(self, saved_position, line):
         if line == "# lecture":
             # 1~3 사이의 랜덤 정수를 생성하여 파일 이름 결정
@@ -900,6 +915,7 @@ class GameScreen(Screen):
         else:
             return "./event_story/" + f"{sub_event_list[num]}"
 
+    # 7. 리팩토링: 코드의 반복성을 줄이고 재사용성을 높인 구조화된 로직
     def reaction_text(self):
         # 선택된 버튼의 reaction_number를 기준으로 텍스트 파일을 선택
         reaction_number = -1
