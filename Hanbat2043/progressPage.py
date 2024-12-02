@@ -13,7 +13,7 @@ from kivy.core.window import Window
 class FontManager:
     @staticmethod
     def register_fonts():
-        # 폰트 경로 등록
+        # 5. 텍스트 파일: 다양한 환경에서 폰트 파일 경로를 처리
         if hasattr(sys, '_MEIPASS'):
             font_path_h2gprm = os.path.join(sys._MEIPASS, 'H2GPRM.ttf')
         else:
@@ -31,6 +31,7 @@ class ProgressPageCompo(BoxLayout):
         super().__init__(**kwargs)
         self.layout = layout
         self.progress_value = 50
+        # 3. 데이터 구조체 - 딕셔너리와 집합: 이벤트별 남은 날을 딕셔너리로 관리
         self.days_left = {'mid_exam': 5, 'project': 10, 'final_exam': 12}
         self.ability_stat = 0  # 능력치 기본 값으로 정수 설정
 
@@ -40,12 +41,13 @@ class ProgressPageCompo(BoxLayout):
         # UI 요소 초기화
         self.days_left_labels = []
         self.back_button = None
+        # 5. 텍스트 파일: 리소스 경로에서 이미지 파일 관리
         if hasattr(sys, '_MEIPASS'):
             self.title_image_path = os.path.join(sys._MEIPASS, 'progress_icon.png')
         else:
             self.title_image_path = os.path.join(os.path.dirname(__file__), 'progress_icon.png')
 
-        # GameScreen 이벤트 리스너 등록
+        # 1. 특별 메서드: GameScreen에서 능력치 업데이트를 리스너로 처리
         from game_screen import GameScreen
         GameScreen.add_listener(self.on_stat_update)
 
@@ -57,6 +59,7 @@ class ProgressPageCompo(BoxLayout):
 
     def initialize_components(self):
         """UI 구성 요소를 초기화합니다."""
+        # 7. 리팩토링: 남은 날 라벨 생성 로직을 별도로 정의
         self.days_left_labels = [
             self.create_days_left_label('중간고사', 'mid_exam'),
             self.create_days_left_label('팀 프로젝트', 'project'),
@@ -113,6 +116,7 @@ class ProgressPageCompo(BoxLayout):
 
     def on_button_clicked(self, instance):
         """뒤로가기 버튼 클릭 시 호출됩니다."""
+        # 9. 객체 참조, 가변성, 재활용: screen_manager를 사용하여 화면 변경
         self.screen_manager.current = 'gamescreen'
 
     def update_progress_rect(self, *args):
@@ -125,6 +129,7 @@ class ProgressPageCompo(BoxLayout):
 
     def on_stat_update(self, stat):
         """GameScreen에서 능력치 업데이트 시 호출됩니다."""
+        # 2. 내장 시퀀스: stat의 타입과 내용을 확인하여 처리
         if isinstance(stat, int):  # stat이 정수인지 확인
             self.ability_stat = stat
             self.update_ui()
@@ -142,6 +147,7 @@ class ProgressPageCompo(BoxLayout):
 
     def update_ui(self):
         """UI를 업데이트합니다."""
+        # 3. 데이터 구조체 - 딕셔너리와 집합: 남은 일수 딕셔너리를 순회하며 UI 갱신
         for i, label in enumerate(self.days_left_labels):
             event_key = list(self.days_left.keys())[i]
             days_left = max(0, self.days_left[event_key] - self.ability_stat)
@@ -153,6 +159,7 @@ class ProgressPageCompo(BoxLayout):
 
     def create_days_left_label(self, event_name, event_key):
         """남은 일수 라벨을 생성합니다."""
+        # 4. 데이터 구조체 - 텍스트와 바이트: 텍스트 기반 남은 일수 라벨 생성
         days_left = max(0, self.days_left[event_key] - self.ability_stat)
         days_left_text = f"{event_name}까지 {days_left}일 남았다."
         return Label(text=days_left_text, size_hint=(1, None), height=30, font_name='H2GPRM')
@@ -166,11 +173,13 @@ class ProgressPageBackground:
             self.rect = Rectangle(size=self.layout.size, pos=self.layout.pos)
 
     def update_rect(self, *args):
+        # 9. 객체 참조, 가변성, 재활용: 레이아웃의 크기 및 위치 업데이트
         self.rect.size = self.layout.size
         self.rect.pos = self.layout.pos
 
 def ProgressPage(screen_manager):
     """진행도 페이지의 위젯을 반환합니다."""
+    # 7. 리팩토링: FloatLayout과 ProgressPageCompo를 분리
     layout = FloatLayout(size=(400, 600))
     ProgressPageBackground(layout)
 

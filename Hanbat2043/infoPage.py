@@ -11,6 +11,7 @@ class FontManager:
     @staticmethod
     def register_fonts():
         """H2GPRM 폰트를 등록합니다."""
+        # 5. 텍스트 파일: 폰트 파일 경로를 확인하고 등록
         if hasattr(sys, '_MEIPASS'):
             font_path = os.path.join(sys._MEIPASS, 'H2GPRM.ttf')
         else:
@@ -31,6 +32,7 @@ class InfoPage(FloatLayout):
         from game_screen import GameScreen
 
         # GameScreen에서 능력치 불러오기
+        # 1. 특별 메서드:  GameScreen의 add_listener 메서드 호출
         GameScreen.add_listener(self.on_stat_update)  # 리스너 추가
         self.ability_stat = GameScreen.ability_stat  # 초기 능력치 불러오기
 
@@ -43,6 +45,7 @@ class InfoPage(FloatLayout):
 
     def update_ability_stat(self, stat):
         """전달받은 stat 배열을 사용해 UI 업데이트."""
+        # 3. 데이터 구조체 - 딕셔너리와 집합: stat 딕셔너리를 활용하여 능력치 관리
         self.ability_stat = stat
         print("infoPage에서 Stat 데이터:", self.ability_stat)
         self.update_ui()  # UI 업데이트 로직
@@ -55,6 +58,7 @@ class InfoPage(FloatLayout):
 
     def get_info(self):
         """사용자 이름과 특성을 포맷팅된 문자열로 반환합니다."""
+        # 4. 데이터 구조체 - 텍스트와 바이트: 포맷팅을 통해 문자열 생성
         return f"{self.userName}\n{self.userState}\n\n\" {self.userTrait} \""
 
     def setup_ui(self):
@@ -77,7 +81,7 @@ class InfoPage(FloatLayout):
         # 능력치 제목
         text_layout.add_widget(self.create_label('__능력치__', font_size='24sp', height=40, bold=True, padding_y=38))
 
-        # 능력치 리스트
+        # 3. 데이터 구조체 - 딕셔너리와 집합: 능력치 딕셔너리를 순회하며 UI를 동적으로 생성
         for name, level in self.ability_stat.items():
             description = self.get_ability_description(name)
             if description != "설명이 없습니다.":
@@ -92,6 +96,7 @@ class InfoPage(FloatLayout):
 
     def create_label(self, text, font_size, height, bold=False, padding_y=0):
         """공통적으로 사용되는 Label을 생성."""
+        # 3. 데이터 구조체 - 딕셔너리와 집합: 능력치 설명 딕셔너리 사용
         return Label(
             text=text,
             font_size=font_size,
@@ -134,4 +139,5 @@ class InfoPage(FloatLayout):
 
     def on_button_clicked(self, instance):
         """돌아가기 버튼 클릭 시 호출되는 메서드."""
+        # 9. 객체 참조, 가변성, 재활용: screen_manager의 상태를 변경하여 화면을 재활용
         self.screen_manager.current = 'gamescreen'

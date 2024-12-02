@@ -34,10 +34,11 @@ class EndingScreen(Screen):
         Window.bind(on_resize=self.on_window_resize)
 
     def on_window_resize(self, instance, width, height):
-        # 레이아웃 갱신 후 폰트 크기 계산을 지연 실행
+        # 6. First-class Functions (일급 함수): Clock.schedule_once를 활용하여 레이아웃 업데이트를 예약
         Clock.schedule_once(self.update_font_size)
 
     def update_font_size(self, dt):
+        # 7. 리팩토링: 텍스트 크기를 창 크기에 맞춰 동적으로 조정
         if self.ids.ending_label:
             box_width = self.ids.ending_content_box.width
             box_height = self.ids.ending_content_box.height
@@ -71,6 +72,8 @@ class EndingScreen(Screen):
             self.ending_screen(game_result)
 
     def game_over_screen(self, game_result):
+        # 3. 데이터 구조체 - 딕셔너리와 집합: 멘탈 상태에 따라 다른 텍스트 파일과 레이아웃을 설정
+
         if hasattr(sys, '_MEIPASS'):
             fontName_Nan = os.path.join(sys._MEIPASS, 'NanumGothic.ttf')
         else:
@@ -188,6 +191,8 @@ class EndingScreen(Screen):
 
     def update_text(self, dt):
         """텍스트를 한 줄씩 업데이트. 완료되면 on_complete 콜백을 호출."""
+        # 4. 데이터 구조체 - 텍스트와 바이트: 텍스트를 한 줄씩 업데이트하며 사용자의 인터페이스에 반영
+
         if self.current_index < len(self.full_text_lines):
             self.displayed_text += self.full_text_lines[self.current_index]
             self.ids.ending_label.text = self.displayed_text
@@ -241,6 +246,7 @@ class EndingScreen(Screen):
             self.ids.ending_button_box.add_widget(exit_button)
 
     def go_back_to_main_menu(self, instance):
+        # 9. 객체 참조, 가변성, 재활용: 레이아웃 및 객체 상태 초기화
         self.button_added = False
         self.ids.ending_button_box.clear_widgets()
         self.ids.ending_label.text = ''
@@ -252,6 +258,7 @@ class EndingScreen(Screen):
 
     def get_resource_path(self, filename):
         """리소스 경로를 반환하는 함수"""
+        # 5. 텍스트 파일: 리소스 파일의 경로를 반환 (PyInstaller와 개발 환경을 구분)
         if hasattr(sys, '_MEIPASS'):
             # PyInstaller 환경에서 리소스 경로 반환
             return os.path.join(sys._MEIPASS, filename)
