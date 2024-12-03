@@ -427,7 +427,7 @@ Greedy는 알고리즘의 한 유형이었던 것 같은데
 다형성을 안전하게 사용할 수 있어
 
 # midterm_exam - 4
-INSERT면 삽입이잖아
+"INSERT"면 삽입이잖아
 데이터를 생성하는거야 조작하는거야 제어하는거야
 삽입이면 생성..DDL..? 조작인 DML인가?
 
@@ -445,7 +445,7 @@ S로 시작하는 단위였는데.. 세그먼트?
 덕분에 여러 환경에서 널리 사용되고 있지
 
 # final_exam - 2
-Attribute-Value Pair Notation의 약자로
+"Attribute-Value Pair Notation"의 약자로
 속성-값 쌍 데이터를 교환하기 위한 형식맞잖아
 아 맞다.. 보안성으로 인해 사용되지 않는 경향이 있지..
 그럼 표준이 아니겠네..
@@ -457,7 +457,7 @@ Optimal이면 최적화라는 뜻이잖아
 
 # final_exam - 4
 C, B, A, D이면
-A넣고 B넣고 C넣고 C빼고 B빼고 A빼고 D넣고 빼면..
+음, A넣고 B넣고 C넣고 C빼고 B빼고 A빼고 D넣고 빼면..
 뭐야 되잖아..
 
 # final_exam - 5

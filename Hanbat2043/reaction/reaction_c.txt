@@ -170,7 +170,7 @@ HTML은 마크업 언어잖아
 
 # final_exam - 4
 B, C, D, A 면
-A넣고 B넣고 B빼고 C넣고 C빼고 D넣고 D빼고 A빼면..
+음, A넣고 B넣고 B빼고 C넣고 C빼고 D넣고 D빼고 A빼면..
 엥 되네?
 
 # final_exam - 5

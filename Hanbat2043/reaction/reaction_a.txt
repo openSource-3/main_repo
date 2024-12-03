@@ -508,7 +508,7 @@ pass
 다만, 조회하거나 슬라이싱하는 건 가능하다고 배웠어
 
 # midterm_exam - 2
-Asynchronous JavaScript and XML
+"Asynchronous JavaScript and XML"
 즉, AJAX는 웹 페이지가 전체를 새로고침하지 않고도
 서버와 통신하여 데이터를 주고받을 수 있게 해주지
 이 기술을 사용하면 페이지의 일부분만 업데이트할 수 있어서
