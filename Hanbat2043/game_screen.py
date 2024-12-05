@@ -459,7 +459,7 @@ class GameScreen(Screen):
             Clock.schedule_once(self.start_automatic_text, 0.5)
             self.event = False
         # 5. 텍스트 파일: 특정 조건에 따라 텍스트 파일을 읽고 처리하여 게임 흐름을 제어
-        elif self.day == 1:  # 메인 스토리 루트가 5주차 진입 시 중간고사 이벤트
+        elif self.day == 4:  # 메인 스토리 루트가 5주차 진입 시 중간고사 이벤트
             self.day += 1
             self.story_lines = self.read_story_text(self.get_resource_path('./routine/middle_story.txt')).splitlines()
             self.current_line = 0
